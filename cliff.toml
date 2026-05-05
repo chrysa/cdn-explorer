@@ -1,0 +1,28 @@
+[changelog]
+header = """
+# Changelog
+
+All notable changes to cdn-explorer will be documented in this file.
+"""
+body = """
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+    {% for commit in commits %}
+        - {% if commit.scope %}(**{{ commit.scope }}**) {% endif %}{{ commit.message }}
+    {% endfor %}
+{% endfor %}
+"""
+trim = true
+footer = ""
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+commit_parsers = [
+    { message = "^feat", group = "Features" },
+    { message = "^fix", group = "Bug Fixes" },
+    { message = "^chore", group = "Miscellaneous" },
+    { message = "^docs", group = "Documentation" },
+    { message = "^refactor", group = "Refactoring" },
+    { message = "^test", group = "Tests" },
+]

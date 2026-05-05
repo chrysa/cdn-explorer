@@ -1,0 +1,49 @@
+default_language_version:
+  python: python3
+fail_fast: false
+minimum_pre_commit_version: 4.1.0
+repos:
+- hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-json
+  - id: check-toml
+  - id: check-merge-conflict
+  - id: detect-private-key
+  - args:
+    - --maxkb=500
+    id: check-added-large-files
+  - args:
+    - --fix=lf
+    id: mixed-line-ending
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+- hooks:
+  - args:
+    - --fix
+    id: ruff-check
+  - id: ruff-format
+  repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.15.11
+- hooks:
+  - additional_dependencies:
+    - pydantic>=2.7
+    - pydantic-settings>=2.3
+    - fastapi>=0.115
+    - httpx>=0.27
+    - beautifulsoup4>=4.12
+    - types-beautifulsoup4>=4.12
+    - pytest>=8.0
+    - pytest-asyncio>=0.23
+    id: mypy
+  repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.20.2
+- hooks:
+  - id: debugger-detection
+  - id: python-print-detection
+  - id: no-bare-except
+  - id: fastapi-missing-response-model
+  - id: yaml-sorter
+  repo: https://github.com/chrysa/pre-commit-tools
+  rev: 0.1.0
