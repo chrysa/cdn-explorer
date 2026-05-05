@@ -1,0 +1,32 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --color-fg: #111;
+  --color-bg: #fff;
+  --color-bg-subtle: #f8f8f8;
+  --color-border: #e0e0e0;
+  --color-muted: #666;
+  --color-accent: #0070f3;
+  --color-hover: #f0f0f0;
+  --font-sans: system-ui, -apple-system, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fg: #f0f0f0;
+    --color-bg: #111;
+    --color-bg-subtle: #1a1a1a;
+    --color-border: #2a2a2a;
+    --color-muted: #888;
+    --color-hover: #222;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}

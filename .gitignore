@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+coverage.xml
+.coverage
+.quality-gate*.json
+.secrets.baseline
+
+# Node
+app/node_modules/
+app/dist/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Docker
+*.log

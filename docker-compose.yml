@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: .
+      target: production
+    environment:
+      ALLOWED_ORIGINS: '["http://localhost:5173","http://app:80"]'
+      DEBUG: 'false'
+    healthcheck:
+      interval: 10s
+      retries: 3
+      start_period: 15s
+      test:
+      - CMD-SHELL
+      - curl -f http://localhost:8000/health || exit 1
+      timeout: 5s
+    ports:
+    - 8010:8000
+  app:
+    build:
+      context: ./app
+      target: production
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+    - 8011:80
+volumes: {}
