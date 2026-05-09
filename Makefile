@@ -55,6 +55,18 @@ typecheck: ## Type-check backend (mypy)
 test: ## Run backend tests (requires deps installed)
 	pytest
 
+install: ## Install backend dev dependencies
+	pip install -e ".[dev]"
+
+dev: install ## Install dev dependencies and pre-commit hooks
+	pre-commit install
+
+test-cov: ## Run tests with coverage report
+	pytest --cov=api --cov-branch \
+		--cov-report=xml:reports/coverage.xml \
+		--cov-report=html:reports/coverage_html_report \
+		--cov-fail-under=85
+
 # ── Misc ──────────────────────────────────────────────────────────────────────
 
 clean: ## Remove build artifacts
