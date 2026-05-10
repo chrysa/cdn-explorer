@@ -1,5 +1,5 @@
 # ── Stage 1: deps ─────────────────────────────────────────────────────────────
-FROM python:3.12-slim AS deps
+FROM python:3.14-slim AS deps
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir ".[dev]"
 
 # ── Stage 2: production ────────────────────────────────────────────────────────
-FROM python:3.12-slim AS production
+FROM python:3.14-slim AS production
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
