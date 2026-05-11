@@ -108,7 +108,8 @@ async def _crawl_url(
     file_nodes: list[FileNode] = []
 
     for anchor in soup.find_all("a", href=True):
-        href: str = anchor["href"]  # type: ignore[index]
+        raw_href = anchor.get("href", "")
+        href: str = str(raw_href)
 
         # Skip parent directory links and anchors
         if href in ("#", "/", "../", "./") or href.startswith("?") or href.startswith("mailto:"):
