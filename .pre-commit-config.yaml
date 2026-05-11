@@ -46,4 +46,4 @@ repos:
   - id: fastapi-missing-response-model
   - id: yaml-sorter
   repo: https://github.com/chrysa/pre-commit-tools
-  rev: 0.1.0
+  rev: v0.1.1-73
