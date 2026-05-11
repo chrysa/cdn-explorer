@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import urllib.parse
+from collections.abc import AsyncGenerator, Generator
 
 import httpx
 from fastapi import APIRouter, HTTPException, Query
@@ -11,7 +12,7 @@ from fastapi.responses import StreamingResponse
 
 from api.constants import DEFAULT_TIMEOUT_SECONDS, MAX_DOWNLOAD_BYTES, USER_AGENT
 from api.crawler import crawl
-from api.schemas import ExploreRequest, ExploreResponse
+from api.schemas import ExploreRequest, ExploreResponse, FileNode
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["explore"])
@@ -36,6 +37,7 @@ async def explore(body: ExploreRequest) -> ExploreResponse:
 
 @router.get(
     "/download",
+    response_model=None,
     summary="Proxy-download a public file from a CDN URL",
 )
 async def download(
@@ -60,7 +62,7 @@ async def download(
     filename = url.rstrip("/").split("/")[-1] or "download"
     content_type = response.headers.get("content-type", "application/octet-stream")
 
-    async def _stream() -> object:
+    async def _stream() -> AsyncGenerator[bytes]:
         total = 0
         async for chunk in response.aiter_bytes(chunk_size=8192):
             total += len(chunk)
@@ -77,7 +79,7 @@ async def download(
     )
 
 
-def _flatten(nodes: list) -> object:
+def _flatten(nodes: list[FileNode]) -> Generator[FileNode]:
     for node in nodes:
         yield node
         if node.children:
