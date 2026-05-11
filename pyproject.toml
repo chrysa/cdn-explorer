@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Navigate and download files from public CDN directory listings"
 authors = ["chrysa <greau.anthony@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 packages = [{include = "api"}]
 
 [tool.poetry.dependencies]
