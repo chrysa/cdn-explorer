@@ -1,6 +1,7 @@
 true:
   pull_request:
     branches:
+<<<<<<< HEAD
       - develop
       - main
   push:
@@ -11,11 +12,47 @@ true:
       - feat/**
       - fix/**
       - main
+||||||| c921955
+---
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+            - develop
+            - "feat/**"
+            - "fix/**"
+            - "ci/**"
+            - "chore/**"
+    pull_request:
+        branches: [main, develop]
+    workflow_dispatch:
+
+permissions:
+    checks: write
+    contents: read
+    pull-requests: write
+    statuses: write
+
+=======
+    - develop
+    - main
+  push:
+    branches:
+    - chore/**
+    - ci/**
+    - develop
+    - feat/**
+    - fix/**
+    - main
+>>>>>>> origin/main
   workflow_dispatch: null
 concurrency:
   cancel-in-progress: true
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
+<<<<<<< HEAD
   pre-commit:
     name: Pre-commit checks
     runs-on: ubuntu-latest
@@ -103,6 +140,170 @@ jobs:
       - name: Test
         run: npm test
         working-directory: app
+||||||| c921955
+    lint:
+        name: Lint & Type-check
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Setup Python environment
+              uses: chrysa/github-actions/python-setup@v1
+              with:
+                  python-version: "3.14"
+
+            - name: Install linting dependencies
+              run: pip install ruff mypy types-beautifulsoup4 pydantic pydantic-settings fastapi httpx beautifulsoup4
+
+            - name: Ruff checks
+              uses: chrysa/github-actions/ruff-check@v1
+              with:
+                  python-version: "3.14"
+                  latest-python: "3.14"
+                  sources: api tests
+
+            - name: Mypy checks
+              uses: chrysa/github-actions/mypy-check@v1
+              with:
+                  python-version: "3.14"
+                  latest-python: "3.14"
+                  config-file: pyproject.toml
+                  sources: api
+
+    test-backend:
+        name: Backend Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v6
+            - name: Build test image
+              run: docker build --target test -t cdn-explorer-api:test .
+            - name: Run tests
+              run: docker run --rm cdn-explorer-api:test
+            - name: Extract coverage
+              run: |
+                  docker run --rm -v ${{ github.workspace }}/coverage:/app/coverage_out \
+                    cdn-explorer-api:test sh -c "cp coverage.xml /app/coverage_out/" || true
+
+    test-frontend:
+        name: Frontend Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v6
+            - name: Set up Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: npm
+                  cache-dependency-path: app/package-lock.json
+            - name: Install
+              run: npm ci
+              working-directory: app
+            - name: Lint
+              run: npm run lint
+              working-directory: app
+            - name: Typecheck
+              run: npm run typecheck
+              working-directory: app
+            - name: Test
+              run: npm test
+              working-directory: app
+
+    build:
+        name: Build Docker images
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        needs:
+            - lint
+            - test-backend
+            - test-frontend
+        steps:
+            - uses: actions/checkout@v6
+            - name: Build API (production)
+              run: docker build --target production -t cdn-explorer-api:ci .
+            - name: Build App (production)
+              run: docker build --target production -t cdn-explorer-app:ci ./app
+=======
+  build:
+    name: Build Docker images
+    needs:
+    - lint
+    - test-backend
+    - test-frontend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - name: Build API (production)
+      run: docker build --target production -t cdn-explorer-api:ci .
+    - name: Build App (production)
+      run: docker build --target production -t cdn-explorer-app:ci ./app
+    timeout-minutes: 30
+  lint:
+    name: Lint & Type-check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup Python environment
+      uses: chrysa/github-actions/python-setup@v1
+      with:
+        python-version: '3.14'
+    - name: Install linting dependencies
+      run: pip install ruff mypy types-beautifulsoup4 pydantic pydantic-settings fastapi
+        httpx beautifulsoup4
+    - name: Ruff checks
+      uses: chrysa/github-actions/ruff-check@v1
+      with:
+        latest-python: '3.14'
+        python-version: '3.14'
+        sources: api tests
+    - name: Mypy checks
+      uses: chrysa/github-actions/mypy-check@v1
+      with:
+        config-file: pyproject.toml
+        latest-python: '3.14'
+        python-version: '3.14'
+        sources: api
+    timeout-minutes: 15
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - name: Build test image
+      run: docker build --target test -t cdn-explorer-api:test .
+    - name: Run tests
+      run: docker run --rm cdn-explorer-api:test
+    - name: Extract coverage
+      run: "docker run --rm -v ${{ github.workspace }}/coverage:/app/coverage_out\
+        \ \\\n  cdn-explorer-api:test sh -c \"cp coverage.xml /app/coverage_out/\"\
+        \ || true\n"
+    timeout-minutes: 20
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        cache: npm
+        cache-dependency-path: app/package-lock.json
+        node-version: '22'
+    - name: Install
+      run: npm ci
+      working-directory: app
+    - name: Lint
+      run: npm run lint
+      working-directory: app
+    - name: Typecheck
+      run: npm run typecheck
+      working-directory: app
+    - name: Test
+      run: npm test
+      working-directory: app
+>>>>>>> origin/main
     timeout-minutes: 15
 name: CI
 permissions:
