@@ -23,6 +23,9 @@ up-dev: ## Start dev stack (hot-reload)
 down: ## Stop all containers
 	$(COMPOSE) down
 
+docker-up: up ## Alias for up
+docker-down: down ## Alias for down
+
 build: ## Build all images
 	docker build --target production -t $(API_IMAGE):latest .
 	docker build --target production -t $(APP_IMAGE):latest ./app
