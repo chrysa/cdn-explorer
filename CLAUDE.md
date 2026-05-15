@@ -1,5 +1,7 @@
 # CDN Explorer — Claude Context
 
+> **Claude Code**: also read `.github/copilot-instructions.md` and `.github/instructions/*.instructions.md` for code specifications.
+
 ## Purpose
 
 Web app to explore and download files from public CDN directory listings.
