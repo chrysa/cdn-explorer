@@ -4,7 +4,7 @@ FROM python:3.14-slim AS deps
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        gcc \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml README.md ./
