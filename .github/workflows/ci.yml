@@ -16,6 +16,20 @@ concurrency:
   cancel-in-progress: true
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
+  pre-commit:
+    name: Pre-commit checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - uses: pre-commit/action@v3.0.1
+
   build:
     name: Build Docker images
     needs:
@@ -35,21 +49,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
-    - name: Setup Python environment
-      uses: chrysa/github-actions/python-setup@v1
+    - uses: chrysa/github-actions/tool-setup@v1
       with:
         python-version: '3.14'
-    - name: Install linting dependencies
-      run: pip install ruff mypy types-beautifulsoup4 pydantic pydantic-settings fastapi
-        httpx beautifulsoup4
-    - name: Ruff checks
-      uses: chrysa/github-actions/ruff-check@v1
+        extras: dev
+    - uses: chrysa/github-actions/ruff-check@v1
       with:
         latest-python: '3.14'
         python-version: '3.14'
         sources: api tests
-    - name: Mypy checks
-      uses: chrysa/github-actions/mypy-check@v1
+    - uses: chrysa/github-actions/mypy-check@v1
       with:
         config-file: pyproject.toml
         latest-python: '3.14'

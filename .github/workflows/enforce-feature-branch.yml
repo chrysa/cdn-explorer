@@ -1,23 +1,11 @@
-true:
-  pull_request:
-    types:
-    - opened
-    - ready_for_review
-    - reopened
-    - synchronize
-jobs:
-  branch-policy:
-    if: github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-latest
-    steps:
-    - env:
-        BRANCH_NAME: ${{ github.head_ref }}
-      name: Validate PR source branch naming
-      run: "branch=\"$BRANCH_NAME\"\npattern='^(feat|feature|fix|chore|docs|refactor|test|ci|build|perf|hotfix)/[a-z0-9._-]+$'\n\
-        if [[ ! \"$branch\" =~ $pattern ]]; then\n  echo \"\u274C Invalid branch name:\
-        \ $branch\"\n  echo \"Expected format: type/short-description\"\n  echo \"\
-        Valid types: feat, feature, fix, chore, docs, refactor, test, ci, build, perf,\
-        \ hotfix\"\n  echo \"Example: feat/add-auth-flow\"\n  exit 1\nfi\necho \"\u2705\
-        \ Branch name '$branch' is valid\"\n"
-      shell: bash
+---
 name: Enforce Feature Branch Policy
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+    call:
+        uses: chrysa/github-actions/.github/workflows/enforce-feature-branch.yml@main
+        secrets: inherit
