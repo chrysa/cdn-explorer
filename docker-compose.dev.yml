@@ -3,21 +3,20 @@ services:
     build:
       context: .
       target: dev
-    ports:
-      - "8010:8000"
     environment:
-      DEBUG: "true"
       ALLOWED_ORIGINS: '["http://localhost:5173","http://localhost:8011"]'
+      DEBUG: 'true'
+    ports:
+    - 8010:8000
     volumes:
-      - ./api:/app/api:ro
-
+    - ./api:/app/api:ro
   app:
     build:
       context: ./app
       target: dev
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./app/src:/app/src:ro
     environment:
-      VITE_API_URL: ""
+      VITE_API_URL: ''
+    ports:
+    - 5173:5173
+    volumes:
+    - ./app/src:/app/src:ro

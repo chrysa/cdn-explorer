@@ -27,6 +27,6 @@ app.add_middleware(
 app.include_router(explore_router)
 
 
-@app.get("/health", tags=["ops"])
+@app.get("/health", tags=["ops"], response_model=dict[str, str])
 async def health() -> dict[str, str]:
     return {"status": "ok"}
