@@ -33,7 +33,6 @@ jobs:
 <<<<<<< HEAD
     call:
         uses: chrysa/github-actions/.github/workflows/enforce-feature-branch.yml@main
-        secrets: inherit
 ||||||| c921955
     branch-policy:
         if: github.actor != 'dependabot[bot]'
