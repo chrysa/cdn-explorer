@@ -20,7 +20,7 @@ jobs:
       with:
         configuration-path: .github/auto_assign.yml
 =======
-true:
+on:
   pull_request:
     types:
     - opened

@@ -21,7 +21,7 @@ on:
         types: [opened, synchronize, reopened, ready_for_review]
 
 =======
-true:
+on:
   pull_request:
     types:
     - opened
