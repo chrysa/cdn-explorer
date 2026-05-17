@@ -1,36 +1,45 @@
-on:
-  pull_request:
-    types:
-    - opened
-    - reopened
-    - synchronize
-  push:
-    branches:
-    - develop
-    - main
-    - master
-concurrency:
-  cancel-in-progress: true
-  group: ${{ github.workflow }}-${{ github.ref }}
-jobs:
-  sonar:
-    if: github.actor != 'dependabot[bot]'
-    name: SonarCloud scan
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-    - name: SonarCloud scan
-      uses: chrysa/github-actions/sonar-scan@v1
-      with:
-        project-key: chrysa_cdn-explorer
-        sonar-token: ${{ secrets.SONAR_TOKEN }}
-        sources: .
-        tests: tests
-    timeout-minutes: 15
+---
 name: SonarCloud Analysis
+
+on:
+    push:
+        branches:
+            - main
+            - master
+            - develop
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 permissions:
-  contents: read
-  pull-requests: read
+    contents: read
+    pull-requests: read
+
+jobs:
+    sonar:
+        if: github.actor != 'dependabot[bot]'
+        name: SonarCloud scan
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+            - name: SonarCloud scan
+              uses: chrysa/github-actions/sonar-scan-python@v1
+              with:
+                  python-version: "3.14"
+                  sonar-token: ${{ secrets.SONAR_TOKEN }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  project-key: chrysa_cdn-explorer
+                  organization: chrysa
+                  project-name: cdn-explorer
+                  sources: .
+                  tests: tests
