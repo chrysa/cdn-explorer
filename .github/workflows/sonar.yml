@@ -1,4 +1,4 @@
-on:
+true:
   pull_request:
     types:
     - opened
@@ -9,27 +9,26 @@ on:
     - develop
     - main
     - master
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   sonar:
-    if: ${{ github.event_name != 'pull_request' || github.actor != 'dependabot[bot]'
-      }}
+    if: github.actor != 'dependabot[bot]'
     name: SonarCloud scan
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - name: Checkout
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
-    - env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      name: SonarCloud scan
-      uses: SonarSource/sonarqube-scan-action@v4.2.1
+    - name: SonarCloud scan
+      uses: chrysa/github-actions/sonar-scan@v1
       with:
-        args: '-Dsonar.projectKey=chrysa_lifeos -Dsonar.organization=chrysa -Dsonar.projectName=lifeos
-          -Dsonar.sources=. -Dsonar.exclusions=**/.git/**,**/reports/**,**/.vscode/**,**/node_modules/**
-          -Dsonar.sourceEncoding=UTF-8
-
-          '
+        project-key: chrysa_cdn-explorer
+        sonar-token: ${{ secrets.SONAR_TOKEN }}
+        sources: .
+        tests: tests
     timeout-minutes: 15
 name: SonarCloud Analysis
 permissions:
