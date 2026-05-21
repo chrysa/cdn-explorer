@@ -1,12 +1,17 @@
 # ── Stage 1: deps ─────────────────────────────────────────────────────────────
-FROM node:22-alpine AS deps
+FROM node:22 AS deps
 
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install --ignore-scripts
+RUN npm install --legacy-peer-deps
 
 # ── Stage 2: build ────────────────────────────────────────────────────────────
 FROM deps AS build
+
+# VITE_API_URL: empty string = relative calls via nginx proxy (dev default)
+#               http://localhost:8000 = direct calls (host-network Docker mode)
+ARG VITE_API_URL=""
+ENV VITE_API_URL=${VITE_API_URL}
 
 COPY . .
 RUN npm run build
