@@ -1,0 +1,76 @@
+.details {
+  margin-top: 1rem;
+  border: 1px solid var(--color-border, #333);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.summary {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--color-surface, #1a1a1a);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::before {
+  content: "▶";
+  font-size: 0.7rem;
+  transition: transform 0.15s;
+}
+
+details[open] .summary::before {
+  transform: rotate(90deg);
+}
+
+.count {
+  font-weight: 400;
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+
+.log {
+  margin: 0;
+  padding: 0.75rem;
+  max-height: 320px;
+  overflow-y: auto;
+  font-family: "JetBrains Mono", "Fira Code", "Menlo", monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  background: var(--color-code-bg, #111);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.line {
+  display: block;
+}
+
+.lineDefault {
+  color: var(--color-text-muted, #888);
+}
+
+.lineVisit {
+  color: #7dd3fc;
+}
+
+.lineSuccess {
+  color: #86efac;
+}
+
+.lineError {
+  color: #fca5a5;
+}
+
+.lineWarn {
+  color: #fcd34d;
+}

@@ -26,12 +26,13 @@ _HEADERS = {"User-Agent": USER_AGENT}
     summary="Crawl a CDN URL and return its file tree",
 )
 async def explore(body: ExploreRequest) -> ExploreResponse:
-    nodes, truncated = await crawl(body.url)
+    nodes, truncated, log = await crawl(body.url)
     return ExploreResponse(
         root_url=body.url,
         total_nodes=sum(1 for _ in _flatten(nodes)),
         tree=nodes,
         truncated=truncated,
+        log=log,
     )
 
 
