@@ -26,7 +26,7 @@ async def test_explore_returns_tree(client: AsyncClient) -> None:
     ]
 
     with patch("api.routers.explore.crawl", new_callable=AsyncMock) as mock_crawl:
-        mock_crawl.return_value = (mock_nodes, False)
+        mock_crawl.return_value = (mock_nodes, False, [])
 
         response = await client.post("/api/explore", json={"url": "https://cdn.example.com/docs/"})
 
@@ -35,6 +35,7 @@ async def test_explore_returns_tree(client: AsyncClient) -> None:
     assert data["total_nodes"] == 2
     assert len(data["tree"]) == 2
     assert data["truncated"] is False
+    assert data["log"] == []
 
 
 @pytest.mark.asyncio
@@ -53,7 +54,7 @@ async def test_explore_missing_url(client: AsyncClient) -> None:
 async def test_explore_truncated(client: AsyncClient) -> None:
     mock_nodes = [FileNode(name="f.pdf", url="https://cdn.example.com/f.pdf", is_dir=False)]
     with patch("api.routers.explore.crawl", new_callable=AsyncMock) as mock_crawl:
-        mock_crawl.return_value = (mock_nodes, True)
+        mock_crawl.return_value = (mock_nodes, True, [])
         response = await client.post("/api/explore", json={"url": "https://cdn.example.com/"})
     assert response.status_code == 200
     assert response.json()["truncated"] is True
@@ -64,7 +65,7 @@ async def test_explore_nested_tree(client: AsyncClient) -> None:
     child = FileNode(name="sub.pdf", url="https://cdn.example.com/sub/sub.pdf", is_dir=False)
     mock_nodes = [FileNode(name="sub", url="https://cdn.example.com/sub/", is_dir=True, children=[child])]
     with patch("api.routers.explore.crawl", new_callable=AsyncMock) as mock_crawl:
-        mock_crawl.return_value = (mock_nodes, False)
+        mock_crawl.return_value = (mock_nodes, False, [])
         response = await client.post("/api/explore", json={"url": "https://cdn.example.com/"})
     assert response.status_code == 200
     assert response.json()["total_nodes"] == 2

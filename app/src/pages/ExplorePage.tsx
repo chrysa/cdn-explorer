@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { ExploreResponse } from "@/domain/types";
 import { exploreUrl, buildDownloadUrl } from "@/api/client";
 import { FileTree } from "@/components/FileTree";
+import { ScanLog } from "@/components/ScanLog";
 import { Search, Download } from "lucide-react";
 import styles from "./ExplorePage.module.css";
 
@@ -10,7 +11,11 @@ export function ExplorePage() {
   const [url, setUrl] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const { mutate, data, isPending, error, reset } = useMutation<ExploreResponse, Error, string>({
+  const { mutate, data, isPending, error, reset } = useMutation<
+    ExploreResponse,
+    Error,
+    string
+  >({
     mutationFn: (inputUrl) => exploreUrl({ url: inputUrl }),
     onSuccess: () => setSelected(new Set()),
   });
@@ -23,7 +28,7 @@ export function ExplorePage() {
         mutate(url.trim());
       }
     },
-    [url, mutate, reset]
+    [url, mutate, reset],
   );
 
   const toggleSelected = useCallback((fileUrl: string) => {
@@ -82,7 +87,8 @@ export function ExplorePage() {
         <section className={styles.results}>
           <div className={styles.resultsMeta}>
             <span>
-              <strong>{data.total_nodes}</strong> file{data.total_nodes !== 1 ? "s" : ""} found
+              <strong>{data.total_nodes}</strong> file
+              {data.total_nodes !== 1 ? "s" : ""} found
               {data.truncated && " (results truncated — too many files)"}
             </span>
             {selected.size > 0 && (
@@ -94,8 +100,14 @@ export function ExplorePage() {
           </div>
 
           <div className={styles.tree}>
-            <FileTree nodes={data.tree} selected={selected} onToggle={toggleSelected} />
+            <FileTree
+              nodes={data.tree}
+              selected={selected}
+              onToggle={toggleSelected}
+            />
           </div>
+
+          <ScanLog log={data.log ?? []} />
         </section>
       )}
     </main>

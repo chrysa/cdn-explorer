@@ -11,6 +11,7 @@ export interface ExploreResponse {
   total_nodes: number;
   tree: FileNode[];
   truncated: boolean;
+  log: string[];
 }
 
 export interface ExploreRequest {
