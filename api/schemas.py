@@ -30,6 +30,7 @@ class ExploreResponse(BaseModel):
     total_nodes: int
     tree: list[FileNode]
     truncated: bool = False
+    log: list[str] = []
 
 
 class DownloadInfo(BaseModel):
