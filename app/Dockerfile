@@ -8,11 +8,6 @@ RUN npm install --legacy-peer-deps
 # ── Stage 2: build ────────────────────────────────────────────────────────────
 FROM deps AS build
 
-# VITE_API_URL: empty string = relative calls via nginx proxy (dev default)
-#               http://localhost:8000 = direct calls (host-network Docker mode)
-ARG VITE_API_URL=""
-ENV VITE_API_URL=${VITE_API_URL}
-
 COPY . .
 RUN npm run build
 
