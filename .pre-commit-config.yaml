@@ -46,5 +46,26 @@ repos:
   - id: fastapi-missing-response-model
   - id: yaml-sorter
   exclude: '^\(\.github/workflows/|\.github/|GitVersion\.yml)'
+  - id: regression-gate
+    stages:
+    - pre-push
   repo: https://github.com/chrysa/pre-commit-tools
-  rev: v0.1.1-73
+  rev0.1.1-76 v0.1.1-76
+
+- hooks:
+  - args:
+    - feat
+    - fix
+    - docs
+    - style
+    - refactor
+    - test
+    - chore
+    - perf
+    - revert
+    - ci
+    id: conventional-pre-commit
+    stages:
+    - commit-msg
+  repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v4.4.0
