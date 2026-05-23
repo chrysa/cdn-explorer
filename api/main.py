@@ -6,9 +6,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import settings
+from api.observability import init_sentry
 from api.routers.explore import router as explore_router
 
 logging.basicConfig(level=logging.DEBUG if settings.debug else logging.INFO)
+
+init_sentry()
 
 app = FastAPI(
     title="CDN Explorer",
