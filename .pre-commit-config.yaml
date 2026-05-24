@@ -1,71 +1,59 @@
 default_language_version:
-  python: python3.14
+    python: python3.14
 fail_fast: false
 minimum_pre_commit_version: 4.1.0
 repos:
-- hooks:
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  - id: check-yaml
-  - id: check-json
-  - id: check-toml
-  - id: check-merge-conflict
-  - id: detect-private-key
-  - args:
-    - --maxkb=500
-    id: check-added-large-files
-  - args:
-    - --fix=lf
-    id: mixed-line-ending
-  repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
-- hooks:
-  - args:
-    - --fix
-    id: ruff-check
-  - id: ruff-format
-  repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.11
-- hooks:
-  - additional_dependencies:
-    - pydantic>=2.7
-    - pydantic-settings>=2.3
-    - fastapi>=0.115
-    - httpx>=0.27
-    - beautifulsoup4>=4.12
-    - types-beautifulsoup4>=4.12
-    - pytest>=8.0
-    - pytest-asyncio>=0.23
-    id: mypy
-  repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.20.2
-- hooks:
-  - id: debugger-detection
-  - id: python-print-detection
-  - id: no-bare-except
-  - id: fastapi-missing-response-model
-  - id: yaml-sorter
-  exclude: '^\(\.github/workflows/|\.github/|GitVersion\.yml)'
-  - id: regression-gate
-    stages:
-    - pre-push
-  repo: https://github.com/chrysa/pre-commit-tools
-  rev0.1.1-76 v0.1.1-76
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-yaml
+          - id: check-json
+          - id: check-toml
+          - id: check-merge-conflict
+          - id: detect-private-key
+          - id: check-added-large-files
+            args: ['--maxkb=500']
+          - id: mixed-line-ending
+            args: ['--fix=lf']
 
-- hooks:
-  - args:
-    - feat
-    - fix
-    - docs
-    - style
-    - refactor
-    - test
-    - chore
-    - perf
-    - revert
-    - ci
-    id: conventional-pre-commit
-    stages:
-    - commit-msg
-  repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v4.4.0
+    - repo: https://github.com/astral-sh/ruff-pre-commit
+      rev: v0.15.11
+      hooks:
+          - id: ruff-check
+            args: ['--fix']
+          - id: ruff-format
+
+    - repo: https://github.com/pre-commit/mirrors-mypy
+      rev: v1.20.2
+      hooks:
+          - id: mypy
+            additional_dependencies:
+                - pydantic>=2.7
+                - pydantic-settings>=2.3
+                - fastapi>=0.115
+                - httpx>=0.27
+                - beautifulsoup4>=4.12
+                - types-beautifulsoup4>=4.12
+                - pytest>=8.0
+                - pytest-asyncio>=0.23
+
+    - repo: https://github.com/chrysa/pre-commit-tools
+      rev: v0.1.1-76
+      hooks:
+          - id: debugger-detection
+          - id: python-print-detection
+          - id: no-bare-except
+          - id: fastapi-missing-response-model
+          - id: yaml-sorter
+            exclude: ^(\.github/(workflows|ISSUE_TEMPLATE)/|GitVersion\.yml)
+          - id: regression-gate
+            stages: [pre-push]
+
+    - repo: https://github.com/compilerla/conventional-pre-commit
+      rev: v4.4.0
+      hooks:
+          - id: conventional-pre-commit
+            stages: [commit-msg]
+            args: [feat, fix, docs, style, refactor, test, chore, perf, revert, ci]
