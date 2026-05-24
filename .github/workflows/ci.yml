@@ -27,7 +27,7 @@ jobs:
             contents: read
         steps:
             - uses: actions/checkout@v6
-            - uses: actions/setup-python@v6
+            - uses: chrysa/github-actions/python-setup@v1
               with:
                   python-version: "3.14"
                   cache: pip
@@ -41,16 +41,16 @@ jobs:
             contents: read
         steps:
             - uses: actions/checkout@v6
-            - uses: chrysa/github-actions/tool-setup@v1
+            - uses: chrysa/github-actions/tool-setup@v1.0.8
               with:
                   python-version: "3.14"
                   extras: dev
-            - uses: chrysa/github-actions/ruff-check@v1
+            - uses: chrysa/github-actions/ruff-check@v1.0.8
               with:
                   latest-python: "3.14"
                   python-version: "3.14"
                   sources: api tests
-            - uses: chrysa/github-actions/mypy-check@v1
+            - uses: chrysa/github-actions/mypy-check@v1.0.8
               with:
                   config-file: pyproject.toml
                   latest-python: "3.14"
@@ -85,7 +85,7 @@ jobs:
         steps:
             - uses: actions/checkout@v6
             - name: Set up Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: "22"
                   cache: npm

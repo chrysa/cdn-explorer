@@ -21,3 +21,6 @@ app/dist/
 
 # Docker
 *.log
+
+# CodeGraph (local index — never commit)
+.codegraph/
