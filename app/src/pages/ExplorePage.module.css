@@ -26,6 +26,23 @@
   display: flex;
   gap: 8px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .form {
+    flex-direction: column;
+  }
+
+  .button {
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .input {
+    min-height: 44px;
+  }
 }
 
 .input {
