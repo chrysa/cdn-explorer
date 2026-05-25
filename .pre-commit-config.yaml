@@ -50,6 +50,14 @@ repos:
             exclude: ^(\.github/(workflows|ISSUE_TEMPLATE)/|GitVersion\.yml)
           - id: regression-gate
             stages: [pre-push]
+          - id: adr-gate
+          - id: no-sync-in-async
+          - id: dockerfile-no-latest
+          - id: console-log-detection
+          - id: console-debug-detection
+          - id: react-console-error-detection
+          - id: no-console-warn
+          - id: import-no-relative-parent
 
     - repo: https://github.com/compilerla/conventional-pre-commit
       rev: v4.4.0
