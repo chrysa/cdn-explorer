@@ -8,7 +8,7 @@ RUN npm install --legacy-peer-deps
 # ── Stage 2: build ────────────────────────────────────────────────────────────
 FROM deps AS build
 
-# VITE_API_URL: empty string = relative calls via nginx proxy (dev default)
+# VITE_API_URL: empty string = relative calls (dev default)
 #               http://localhost:8000 = direct calls (host-network Docker mode)
 ARG VITE_API_URL=""
 ENV VITE_API_URL=${VITE_API_URL}
@@ -16,14 +16,15 @@ ENV VITE_API_URL=${VITE_API_URL}
 COPY . .
 RUN npm run build
 
-# ── Stage 3: production (nginx) ───────────────────────────────────────────────
-FROM nginx:1.27-alpine AS production
+# ── Stage 3: production ────────────────────────────────────────────────────────────────────────────────────
+FROM deps AS production
 
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist ./dist
 
-EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost/ || exit 1
+EXPOSE 4173
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:4173/ || exit 1
+
+CMD ["./node_modules/.bin/vite", "preview", "--host", "0.0.0.0", "--port", "4173"]
 
 # ── Stage 4: dev ──────────────────────────────────────────────────────────────
 FROM deps AS dev
