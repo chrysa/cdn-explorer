@@ -26,3 +26,8 @@ app/dist/
 graphify-out/
 graphify
 sys
+
+# graphify (local knowledge graph — never commit)
+/graphify
+/sys
+.graphify_version
