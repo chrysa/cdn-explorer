@@ -24,3 +24,5 @@ app/dist/
 # CodeGraph (local index — never commit)
 .codegraph/
 graphify-out/
+graphify
+sys
