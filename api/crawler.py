@@ -37,7 +37,7 @@ def _try_parse_nginx_json(text: str) -> list[dict[str, str]] | None:
     """
     try:
         data = json.loads(text)
-    except json.JSONDecodeError, ValueError:
+    except (json.JSONDecodeError, ValueError):
         return None
     if not isinstance(data, list):
         return None
