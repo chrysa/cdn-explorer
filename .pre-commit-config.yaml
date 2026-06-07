@@ -1,5 +1,5 @@
 default_language_version:
-    python: python3.14
+  python: python3.14
 fail_fast: false
 minimum_pre_commit_version: 4.1.0
 repos:
@@ -17,6 +17,10 @@ repos:
             args: ['--maxkb=500']
           - id: mixed-line-ending
             args: ['--fix=lf']
+          - args:
+                - --branch
+                - main
+            id: no-commit-to-branch
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
       rev: v0.15.11
@@ -40,7 +44,7 @@ repos:
                 - pytest-asyncio>=1.4.0
 
     - repo: https://github.com/chrysa/pre-commit-tools
-      rev: v0.1.1-92
+      rev: v0.1.1-93
       hooks:
           - id: debugger-detection
           - id: python-print-detection
@@ -59,9 +63,32 @@ repos:
           - id: no-console-warn
           - id: import-no-relative-parent
 
+          - id: json-sorter
+          - id: env-file-check
+          - id: env-example-sync
+          - id: python-pprint-detection
+            exclude: 'tests?/'
+          - id: python-logger-detection
+          - id: python-unreachable-code
+          - id: no-hardcoded-localhost
+            exclude: 'tests?/|\.test\.|\.spec\.'
+          - id: fastapi-missing-links
+            exclude: '^tests/'
     - repo: https://github.com/compilerla/conventional-pre-commit
       rev: v4.4.0
       hooks:
           - id: conventional-pre-commit
             stages: [commit-msg]
             args: [feat, fix, docs, style, refactor, test, chore, perf, revert, ci]
+    - repo: https://github.com/igorshubovych/markdownlint-cli
+      rev: v0.48.0
+      hooks:
+          - args:
+                - --fix
+            id: markdownlint
+            stages:
+                - manual
+    - repo: https://github.com/gitleaks/gitleaks
+      rev: v8.30.0
+      hooks:
+          - id: gitleaks
