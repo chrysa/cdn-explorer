@@ -1,3 +1,4 @@
+# makefile-tier: python-app
 .DEFAULT_GOAL := help
 
 COMPOSE        := docker compose
@@ -76,3 +77,6 @@ clean: ## Remove build artifacts
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -name "*.pyc" -delete 2>/dev/null || true
 	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov coverage.xml app/dist
+
+# ─── CI gate ────────────────────────────────────
+ci: lint typecheck test ## Run the full local gate (lint + typecheck + test)
