@@ -1,0 +1,23 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  /* Amber surface with dark text — WCAG 2.1 AA (contrast > 7:1). */
+  background: #fcd34d;
+  color: #4a2c04;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  border-bottom: 1px solid #b45309;
+}
+
+.tag {
+  flex-shrink: 0;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  background: #b45309;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}

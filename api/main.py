@@ -30,6 +30,11 @@ app.add_middleware(
 app.include_router(explore_router)
 
 
-@app.get("/health", tags=["ops"], response_model=dict[str, str])
-async def health() -> dict[str, str]:
-    return {"status": "ok"}
+@app.get("/health", tags=["ops"], response_model=dict[str, object])
+async def health() -> dict[str, object]:
+    """Liveness probe that also reports whether demo mode is active.
+
+    When ``demo_mode`` is true, every crawl returns fixture data and no real
+    CDN is contacted; the frontend shows a persistent "DEMO" banner.
+    """
+    return {"status": "ok", "demo_mode": settings.demo_mode}

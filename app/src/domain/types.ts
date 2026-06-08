@@ -17,3 +17,8 @@ export interface ExploreResponse {
 export interface ExploreRequest {
   url: string;
 }
+
+export interface HealthStatus {
+  status: string;
+  demo_mode: boolean;
+}

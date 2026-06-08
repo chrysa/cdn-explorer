@@ -15,7 +15,9 @@ from api.schemas import FileNode
 async def test_health(client: AsyncClient) -> None:
     response = await client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["demo_mode"] is False
 
 
 @pytest.mark.asyncio

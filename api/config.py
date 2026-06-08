@@ -10,5 +10,10 @@ class Settings(BaseSettings):
     debug: bool = False
     allowed_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
+    # Demo mode — serve fixture data from the crawler so the app is fully
+    # explorable without reaching any real CDN. A "DEMO" banner is shown in the
+    # UI while enabled. Off by default; never enable in production.
+    demo_mode: bool = False
+
 
 settings = Settings()
