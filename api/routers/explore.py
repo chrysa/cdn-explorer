@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import urllib.parse
 from collections.abc import AsyncGenerator, Generator
+from typing import Annotated
 
 import httpx
 from fastapi import APIRouter, HTTPException, Query
@@ -42,7 +43,7 @@ async def explore(body: ExploreRequest) -> ExploreResponse:
     summary="Proxy-download a public file from a CDN URL",
 )
 async def download(
-    url: str = Query(..., description="Public file URL to download"),
+    url: Annotated[str, Query(description="Public file URL to download")],
 ) -> StreamingResponse:
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme not in ("http", "https"):
