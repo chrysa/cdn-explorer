@@ -41,7 +41,7 @@ describe("ExplorePage", () => {
       // so match on the containing element's textContent.
       expect(
         screen.getByText(
-          (_, el) =>
+          (_content: string, el: Element | null) =>
             el?.tagName === "SPAN" && /2\s+files\s+found/i.test(el.textContent ?? ""),
         ),
       ).toBeDefined();
