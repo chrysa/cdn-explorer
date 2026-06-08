@@ -4,7 +4,7 @@ fail_fast: false
 minimum_pre_commit_version: 4.1.0
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v5.0.0
+      rev: v6.0.0
       hooks:
           - id: trailing-whitespace
           - id: end-of-file-fixer
@@ -23,14 +23,14 @@ repos:
             id: no-commit-to-branch
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.15.11
+      rev: v0.15.16
       hooks:
           - id: ruff-check
             args: ['--fix']
           - id: ruff-format
 
     - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: v1.20.2
+      rev: v2.1.0
       hooks:
           - id: mypy
             additional_dependencies:
