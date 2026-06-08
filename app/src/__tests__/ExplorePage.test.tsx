@@ -37,7 +37,14 @@ describe("ExplorePage", () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(screen.getByText(/2 files found/i)).toBeDefined();
+      // Count is split across nodes (<strong>2</strong> file{s} found),
+      // so match on the containing element's textContent.
+      expect(
+        screen.getByText(
+          (_, el) =>
+            el?.tagName === "SPAN" && /2\s+files\s+found/i.test(el.textContent ?? ""),
+        ),
+      ).toBeDefined();
     });
 
     expect(screen.getByText("td-01.pdf")).toBeDefined();
