@@ -1,6 +1,18 @@
-import type { ExploreRequest, ExploreResponse } from "@/domain/types";
+import type {
+  ExploreRequest,
+  ExploreResponse,
+  HealthStatus,
+} from "@/domain/types";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+
+export async function fetchHealth(): Promise<HealthStatus> {
+  const response = await fetch(`${BASE_URL}/health`);
+  if (!response.ok) {
+    throw new Error(`Health check failed (${response.status})`);
+  }
+  return response.json() as Promise<HealthStatus>;
+}
 
 export async function exploreUrl(
   req: ExploreRequest,

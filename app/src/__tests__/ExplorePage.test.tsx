@@ -36,11 +36,13 @@ describe("ExplorePage", () => {
     const button = screen.getByRole("button", { name: /explore/i });
     fireEvent.click(button);
 
+    // The count is split across a <strong> element, so match on the file name
+    // (rendered only once results arrive) and assert the count via textContent.
     await waitFor(() => {
-      expect(screen.getByText(/2 files found/i)).toBeDefined();
+      expect(screen.getByText("td-01.pdf")).toBeDefined();
     });
+    expect(document.body.textContent?.replace(/\s+/g, " ")).toContain("2 files found");
 
-    expect(screen.getByText("td-01.pdf")).toBeDefined();
     expect(screen.getByText("td-02.pdf")).toBeDefined();
   });
 });

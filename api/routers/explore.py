@@ -10,6 +10,7 @@ import httpx
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
+from api.config import settings
 from api.constants import DEFAULT_TIMEOUT_SECONDS, MAX_DOWNLOAD_BYTES, USER_AGENT
 from api.crawler import crawl
 from api.schemas import ExploreRequest, ExploreResponse, FileNode
@@ -47,6 +48,21 @@ async def download(
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme not in ("http", "https"):
         raise HTTPException(status_code=400, detail="Only http/https URLs are supported")
+
+    # Demo mode — serve a small inline payload without contacting any real CDN,
+    # so fixture file links remain downloadable while exploring.
+    if settings.demo_mode:
+        filename = url.rstrip("/").split("/")[-1] or "download"
+        body = f"Demo file: {filename}\nThis is fixture content served in demo mode.\n".encode()
+
+        async def _demo_stream() -> AsyncGenerator[bytes]:
+            yield body
+
+        return StreamingResponse(
+            _demo_stream(),
+            media_type="text/plain",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
 
     try:
         client = httpx.AsyncClient(headers=_HEADERS, timeout=DEFAULT_TIMEOUT_SECONDS, follow_redirects=True)

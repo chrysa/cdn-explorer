@@ -7,8 +7,9 @@ import logging
 from urllib.parse import urljoin, urlparse
 
 import httpx
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
+from api.config import settings
 from api.constants import (
     ASSET_EXTENSIONS,
     DEFAULT_TIMEOUT_SECONDS,
@@ -17,6 +18,7 @@ from api.constants import (
     MAX_NODES,
     USER_AGENT,
 )
+from api.fixtures import demo_crawl_result
 from api.schemas import FileNode
 
 logger = logging.getLogger(__name__)
@@ -71,7 +73,13 @@ async def crawl(root_url: str) -> tuple[list[FileNode], bool, list[str]]:
     Strategy:
     - If the page is a directory listing, recurse into subdirectories.
     - Otherwise, extract all asset-extension hrefs from the page.
+
+    When demo mode is enabled, return fixture data without any network request.
     """
+    if settings.demo_mode:
+        logger.info("Demo mode active — returning fixture crawl result for %s", root_url)
+        return demo_crawl_result()
+
     nodes: list[FileNode] = []
     seen: set[str] = set()
     log: list[str] = []
@@ -186,6 +194,8 @@ async def _crawl_url(
     skipped_offhost = 0
 
     for anchor in soup.find_all("a", href=True):
+        if not isinstance(anchor, Tag):
+            continue
         raw_href = anchor.get("href", "")
         href: str = str(raw_href)
 
