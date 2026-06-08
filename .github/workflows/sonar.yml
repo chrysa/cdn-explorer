@@ -41,5 +41,5 @@ jobs:
                   project-key: chrysa_cdn-explorer
                   organization: chrysa
                   project-name: cdn-explorer
-                  sources: .
+                  sources: api,app
                   tests: tests
