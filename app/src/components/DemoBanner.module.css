@@ -8,13 +8,13 @@
   color: var(--color-accent-ink);
   font-size: 0.85rem;
   line-height: 1.4;
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .tag {
   flex-shrink: 0;
   padding: 0.1rem 0.5rem;
-  border-radius: 0;
+  border-radius: var(--radius);
   background: var(--color-fg);
   color: var(--color-bg);
   font-weight: 700;

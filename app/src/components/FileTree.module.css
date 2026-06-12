@@ -13,7 +13,7 @@
   align-items: center;
   gap: 4px;
   padding: 3px 4px;
-  border-radius: 0;
+  border-radius: var(--radius);
   font-size: 13px;
   cursor: default;
 }
@@ -57,7 +57,7 @@
   align-items: center;
   text-decoration: none;
   padding: 2px;
-  border-radius: 0;
+  border-radius: var(--radius);
 }
 
 .downloadBtn:hover {
