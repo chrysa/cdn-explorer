@@ -1,11 +1,12 @@
-/* cdn-explorer — chrysa "Neon Brutalist" design system.
-   Spec: shared-standards/docs/DESIGN-SYSTEM.md
-   DNA: radius 0 · 2px FG-colored borders · hard offset shadows (no blur) ·
-        flat fills · mono-forward · one acid accent (cdn-explorer = magenta).
+/* cdn-explorer — chrysa design system, Console persona.
+   Spec: shared-standards/docs/DESIGN-SYSTEM.md §1 (Console) + ADR 0002.
+   Dense, data-forward: subtle rounding (radius 4) · 1px hairline borders ·
+   soft restrained shadows · readable sans body (Inter) with mono reserved for
+   data · Space Grotesk display · one accent (cdn-explorer = magenta).
    Token names (--color-*) are preserved so every *.module.css inherits.
    Light is the default; dark via prefers-color-scheme (canonical). */
 
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 *,
 *::before,
@@ -19,8 +20,8 @@
   --color-bg-subtle: #f0f0f0;
   --color-surface: #ffffff;
   --color-code-bg: #0e0e10;
-  --color-border: #0e0e10; /* loud, FG-colored */
-  --color-grid: #d4d4d8; /* muted line for dense rows */
+  --color-border: #d4d4d8; /* Console: hairline, subtle */
+  --color-grid: #e4e4e7; /* muted line for dense rows */
   --color-muted: #52525b;
   --color-text-muted: #52525b;
   --color-accent: #c800c8; /* magenta — darker in light for ink contrast */
@@ -28,9 +29,9 @@
   --color-hover: #f0f0f0;
   --color-danger: #dc2626;
   --color-warning: #b45309;
-  --shadow: 4px 4px 0 #0e0e10;
-  --radius: 0px;
-  --font-sans: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --shadow: 0 1px 3px rgb(15 20 36 / 0.1), 0 1px 2px rgb(15 20 36 / 0.06);
+  --radius: 4px;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, Menlo, monospace;
 }
@@ -42,8 +43,8 @@
     --color-bg-subtle: #18181b;
     --color-surface: #18181b;
     --color-code-bg: #0e0e10;
-    --color-border: #fafafa; /* loud, FG-colored */
-    --color-grid: #3f3f46;
+    --color-border: #2e2e33; /* Console: hairline, subtle */
+    --color-grid: #2e2e33;
     --color-muted: #a1a1aa;
     --color-text-muted: #a1a1aa;
     --color-accent: #ff4dff; /* magenta */
@@ -51,7 +52,7 @@
     --color-hover: #242428;
     --color-danger: #ff4d4d;
     --color-warning: #fbbf24;
-    --shadow: 4px 4px 0 #000000;
+    --shadow: 0 1px 3px rgb(0 0 0 / 0.26), 0 1px 2px rgb(0 0 0 / 0.18);
   }
 }
 
@@ -59,7 +60,7 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-fg);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
