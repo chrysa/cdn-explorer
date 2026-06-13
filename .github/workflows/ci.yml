@@ -1,121 +1,33 @@
 ---
+# Thin caller of the generalized chrysa lean CI (compose-backed app).
+# Gate = pre-commit; reports -> Sonar; tests via make docker-test; sonar.
+# Auto-versioning stays in release.yml (GitVersion).
+
 name: CI
 
 on:
-    push:
-        branches:
-            - main
-            - develop
-            - "feat/**"
-            - "fix/**"
-            - "ci/**"
-            - "chore/**"
     pull_request:
-        branches: [main, develop]
+        branches: [main]
+    push:
+        branches: [main, "feat/**", "fix/**", "chore/**", "ci/**"]
     workflow_dispatch:
 
+permissions:
+    contents: read
+    checks: write
+    pull-requests: write
+
 concurrency:
+    group: ci-${{ github.ref }}
     cancel-in-progress: true
-    group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-    pre-commit:
-        name: Pre-commit checks
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        permissions:
-            contents: read
-        steps:
-            - uses: actions/checkout@v6.0.3
-            - uses: chrysa/github-actions/python-setup@v1.1.3
-              with:
-                  python-version: "3.14"
-                  cache: pip
-            - uses: pre-commit/action@v3.0.1
-
-    lint:
-        name: Lint & Type-check
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        permissions:
-            contents: read
-        steps:
-            - uses: actions/checkout@v6.0.3
-            - uses: chrysa/github-actions/tool-setup@v1.1.3
-              with:
-                  python-version: "3.14"
-                  extras: dev
-            - uses: chrysa/github-actions/ruff-check@v1.1.3
-              with:
-                  latest-python: "3.14"
-                  python-version: "3.14"
-                  sources: api tests
-            - uses: chrysa/github-actions/mypy-check@v1.1.3
-              with:
-                  config-file: pyproject.toml
-                  latest-python: "3.14"
-                  python-version: "3.14"
-                  sources: api
-
-    test-backend:
-        name: Backend Tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 20
-        permissions:
-            checks: write
-            contents: read
-            pull-requests: write
-        steps:
-            - uses: actions/checkout@v6.0.3
-            - name: Build test image
-              run: docker build --target test -t cdn-explorer-api:test .
-            - name: Run tests
-              run: docker run --rm cdn-explorer-api:test
-            - name: Extract coverage
-              run: |
-                  docker run --rm -v ${{ github.workspace }}/coverage:/app/coverage_out \
-                    cdn-explorer-api:test sh -c "cp coverage.xml /app/coverage_out/" || true
-
-    test-frontend:
-        name: Frontend Tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        permissions:
-            contents: read
-        steps:
-            - uses: actions/checkout@v6.0.3
-            - name: Set up Node
-              uses: actions/setup-node@v6
-              with:
-                  node-version: "22"
-                  cache: npm
-                  cache-dependency-path: app/package-lock.json
-            - name: Install
-              run: npm ci
-              working-directory: app
-            - name: Lint
-              run: npm run lint
-              working-directory: app
-            - name: Typecheck
-              run: npm run typecheck
-              working-directory: app
-            - name: Test
-              run: npm test
-              working-directory: app
-
-    build:
-        name: Build Docker images
-        runs-on: ubuntu-latest
-        timeout-minutes: 30
-        permissions:
-            contents: read
-        needs:
-            - lint
-            - test-backend
-            - test-frontend
-        steps:
-            - uses: actions/checkout@v6.0.3
-            - name: Build API (production)
-              run: docker build --target production -t cdn-explorer-api:ci .
-            - name: Build App (production)
-              run: docker build --target production -t cdn-explorer-app:ci ./app
+    ci:
+        uses: chrysa/github-actions/.github/workflows/ci-python-app.yml@main
+        with:
+            sources: "."
+            typecheck-paths: api
+            project-key: chrysa_cdn-explorer
+            project-name: cdn-explorer
+            sonar-sources: "."
+        secrets: inherit
