@@ -1,0 +1,36 @@
+---
+name: Deploy
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: Image tag to deploy (e.g. v1.2.0)
+                required: true
+
+permissions:
+    contents: read
+    packages: write
+
+jobs:
+    deploy:
+        uses: chrysa/github-actions/.github/workflows/deploy.yml@main
+        with:
+            image-base: ghcr.io/chrysa/cdn-explorer
+            tag: ${{ inputs.tag }}
+            backend-context: .
+            backend-dockerfile: Dockerfile
+            target: production
+            build-frontend: true
+            frontend-image: ghcr.io/chrysa/cdn-explorer-frontend
+            frontend-context: app
+            frontend-dockerfile: app/Dockerfile
+            frontend-build-args: |
+                VITE_API_URL=https://cdn-explorer-api.ducal.me
+            gitops: true
+            api-values-path: apps/dev/cdn-explorer-api/values.yaml
+            app-values-path: apps/dev/cdn-explorer-app/values.yaml
+        secrets:
+            release-token: ${{ secrets.RELEASE_TOKEN }}
