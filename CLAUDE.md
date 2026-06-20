@@ -87,3 +87,7 @@ This project is indexed by GitNexus as **cdn-explorer** (277 symbols, 374 relati
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+<!-- chrysa:standards-import:start -->
+@.chrysa/STANDARDS.md
+<!-- chrysa:standards-import:end -->
