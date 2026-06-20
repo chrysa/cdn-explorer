@@ -3,93 +3,118 @@ default_language_version:
 fail_fast: false
 minimum_pre_commit_version: 4.1.0
 repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v5.0.0
-      hooks:
-          - id: trailing-whitespace
-          - id: end-of-file-fixer
-          - id: check-yaml
-          - id: check-json
-          - id: check-toml
-          - id: check-merge-conflict
-          - id: detect-private-key
-          - id: check-added-large-files
-            args: ['--maxkb=500']
-          - id: mixed-line-ending
-            args: ['--fix=lf']
-          - args:
-                - --branch
-                - main
-            id: no-commit-to-branch
-
-    - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.15.11
-      hooks:
-          - id: ruff-check
-            args: ['--fix']
-          - id: ruff-format
-
-    - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: v1.20.2
-      hooks:
-          - id: mypy
-            additional_dependencies:
-                - pydantic>=2.7
-                - pydantic-settings>=2.14.1
-                - fastapi>=0.115
-                - httpx>=0.28.1
-                - beautifulsoup4>=4.15.0
-                - types-beautifulsoup4>=4.12.0.20250516
-                - pytest>=9.0.3
-                - pytest-asyncio>=1.4.0
-
-    - repo: https://github.com/chrysa/pre-commit-tools
-      rev: v0.1.1-94
-      hooks:
-          - id: makefile-check
-          - id: debugger-detection
-          - id: python-print-detection
-          - id: no-bare-except
-          - id: fastapi-missing-response-model
-          - id: yaml-sorter
-            exclude: ^(\.github/(workflows|ISSUE_TEMPLATE)/|GitVersion\.yml)
-          - id: regression-gate
-            stages: [pre-push]
-          - id: adr-gate
-          - id: no-sync-in-async
-          - id: dockerfile-no-latest
-          - id: console-log-detection
-          - id: console-debug-detection
-          - id: react-console-error-detection
-          - id: no-console-warn
-          - id: import-no-relative-parent
-
-          - id: json-sorter
-          - id: env-file-check
-          - id: env-example-sync
-          - id: python-pprint-detection
-            exclude: 'tests?/'
-          - id: python-logger-detection
-          - id: python-unreachable-code
-          - id: no-hardcoded-localhost
-            exclude: 'tests?/|\.test\.|\.spec\.'
-          - id: fastapi-missing-links
-            exclude: '^tests/'
-    - repo: https://github.com/compilerla/conventional-pre-commit
-      rev: v4.4.0
-      hooks:
-          - id: conventional-pre-commit
-            stages: [commit-msg]
-            args: [feat, fix, docs, style, refactor, test, chore, perf, revert, ci]
-    - repo: https://github.com/igorshubovych/markdownlint-cli
-      rev: v0.48.0
-      hooks:
-          - args:
-                - --fix
-            id: markdownlint
-            stages:
-                - manual
-    - repo: https://github.com/gitleaks/gitleaks
-      rev: v8.30.1
-      hooks:
-          - id: gitleaks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-json
+  - id: check-toml
+  - id: check-merge-conflict
+  - id: detect-private-key
+  - id: check-added-large-files
+    args:
+    - --maxkb=500
+  - id: mixed-line-ending
+    args:
+    - --fix=lf
+  - args:
+    - --branch
+    - main
+    id: no-commit-to-branch
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.15.11
+  hooks:
+  - id: ruff-check
+    args:
+    - --fix
+  - id: ruff-format
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.20.2
+  hooks:
+  - id: mypy
+    additional_dependencies:
+    - pydantic>=2.7
+    - pydantic-settings>=2.14.1
+    - fastapi>=0.115
+    - httpx>=0.28.1
+    - beautifulsoup4>=4.15.0
+    - types-beautifulsoup4>=4.12.0.20250516
+    - pytest>=9.0.3
+    - pytest-asyncio>=1.4.0
+- repo: https://github.com/chrysa/pre-commit-tools
+  rev: v0.1.1-94
+  hooks:
+  - id: makefile-check
+  - id: debugger-detection
+  - id: python-print-detection
+  - id: no-bare-except
+  - id: fastapi-missing-response-model
+  - id: yaml-sorter
+    exclude: ^(\.github/(workflows|ISSUE_TEMPLATE)/|GitVersion\.yml)
+  - id: regression-gate
+    stages:
+    - pre-push
+  - id: adr-gate
+  - id: no-sync-in-async
+  - id: dockerfile-no-latest
+  - id: console-log-detection
+  - id: console-debug-detection
+  - id: react-console-error-detection
+  - id: no-console-warn
+  - id: import-no-relative-parent
+  - id: json-sorter
+  - id: env-file-check
+  - id: env-example-sync
+  - id: python-pprint-detection
+    exclude: tests?/
+  - id: python-logger-detection
+  - id: python-unreachable-code
+  - id: no-hardcoded-localhost
+    exclude: tests?/|\.test\.|\.spec\.
+  - id: fastapi-missing-links
+    exclude: ^tests/
+- repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v4.4.0
+  hooks:
+  - id: conventional-pre-commit
+    stages:
+    - commit-msg
+    args:
+    - feat
+    - fix
+    - docs
+    - style
+    - refactor
+    - test
+    - chore
+    - perf
+    - revert
+    - ci
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.48.0
+  hooks:
+  - args:
+    - --fix
+    id: markdownlint
+    stages:
+    - manual
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.30.1
+  hooks:
+  - id: gitleaks
+- repo: local
+  hooks:
+  - id: gitversion-canonical-drift
+    name: GitVersion.yml canonical drift
+    entry: scripts/check-canonical-drift.sh GitVersion.yml templates/GitVersion.yml
+    language: system
+    pass_filenames: false
+    files: ^(GitVersion\.yml|templates/GitVersion\.yml)$
+  - id: cliff-canonical-drift
+    name: cliff.toml canonical drift
+    entry: scripts/check-canonical-drift.sh cliff.toml templates/cliff.toml
+    language: system
+    pass_filenames: false
+    files: ^(cliff\.toml|templates/cliff\.toml)$
