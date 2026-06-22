@@ -6,8 +6,8 @@
 #   api      import package / source dir       (e.g. django_pytest)
 #   api tests      ruff sources, space-separated     (e.g. "django_pytest tests")
 #   tests        test dir                          (e.g. tests)
-#   target    repo name                         (e.g. django-pytest)
-#   chrysa_target  SonarCloud project key            (e.g. chrysa_django-pytest)
+#   cdn-explorer    repo name                         (e.g. django-pytest)
+#   chrysa_cdn-explorer  SonarCloud project key            (e.g. chrysa_django-pytest)
 #
 # ⚠️ This file lives in workflows/ (NOT .github/workflows/) — it is a copy-to-use
 #    template, not a reusable `uses:` workflow.
@@ -77,6 +77,6 @@ jobs:
                   project-key: chrysa_cdn-explorer
                   organization: chrysa
                   project-name: cdn-explorer
-                  sources: api,app
+                  sources: api
                   tests: tests
                   coverage-report: coverage.xml
