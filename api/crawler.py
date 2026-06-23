@@ -25,6 +25,10 @@ logger = logging.getLogger(__name__)
 
 _HEADERS = {"User-Agent": USER_AGENT}
 
+# Href values that represent parent / self directory navigation or non-HTTP links
+_SKIPPABLE_HREF_EXACT: frozenset[str] = frozenset({"/", "../", "./"})
+_SKIPPABLE_HREF_PREFIXES: tuple[str, ...] = ("#", "?", "mailto:")
+
 
 def _is_directory_listing(html: str) -> bool:
     return any(marker in html for marker in DIRECTORY_LISTING_MARKERS)
@@ -64,6 +68,136 @@ def _same_host(base_url: str, href: str) -> bool:
 
 def _normalize(base_url: str, href: str) -> str:
     return urljoin(base_url, href)
+
+
+def _is_skippable_href(href: str) -> bool:
+    """Return True for parent-dir, self-dir, anchor, query, and mailto links."""
+    if href in _SKIPPABLE_HREF_EXACT:
+        return True
+    return any(href.startswith(prefix) for prefix in _SKIPPABLE_HREF_PREFIXES)
+
+
+async def _process_nginx_json_entries(
+    *,
+    client: httpx.AsyncClient,
+    url: str,
+    json_entries: list[dict[str, str]],
+    nodes: list[FileNode],
+    seen: set[str],
+    depth: int,
+    log: list[str],
+) -> bool:
+    """Process nginx JSON autoindex entries; returns True when truncated."""
+    indent = "  " * depth
+    dir_nodes: list[FileNode] = []
+    file_nodes: list[FileNode] = []
+
+    for entry in json_entries:
+        name: str = entry.get("name", "")
+        if not name:
+            continue
+        full_url = _normalize(url, name)
+        if full_url in seen:
+            continue
+        if len(seen) >= MAX_NODES:
+            log.append(f"{indent}  ⚠ MAX_NODES ({MAX_NODES}) reached — truncating")
+            nodes.extend(dir_nodes)
+            nodes.extend(file_nodes)
+            return True
+        entry_type: str = entry.get("type", "file")
+        if entry_type == "directory":
+            child_nodes: list[FileNode] = []
+            truncated = await _crawl_url(
+                client=client,
+                url=full_url.rstrip("/") + "/",
+                nodes=child_nodes,
+                seen=seen,
+                depth=depth + 1,
+                log=log,
+            )
+            dir_nodes.append(FileNode(name=name.rstrip("/"), url=full_url, is_dir=True, children=child_nodes))
+            if truncated:
+                nodes.extend(dir_nodes)
+                nodes.extend(file_nodes)
+                return True
+        elif _is_asset(full_url):
+            seen.add(full_url)
+            file_nodes.append(FileNode(name=name, url=full_url, is_dir=False))
+
+    log.append(f"{indent}  ✔ {len(dir_nodes)} dir(s), {len(file_nodes)} file(s) found")
+    nodes.extend(dir_nodes)
+    nodes.extend(file_nodes)
+    return False
+
+
+async def _process_html_anchors(
+    *,
+    client: httpx.AsyncClient,
+    url: str,
+    soup: BeautifulSoup,
+    nodes: list[FileNode],
+    seen: set[str],
+    depth: int,
+    log: list[str],
+) -> bool:
+    """Process anchor tags from an HTML page; returns True when truncated."""
+    indent = "  " * depth
+    dir_nodes: list[FileNode] = []
+    file_nodes: list[FileNode] = []
+    skipped_offhost = 0
+
+    for anchor in soup.find_all("a", href=True):
+        if not isinstance(anchor, Tag):
+            continue
+        raw_href = anchor.get("href", "")
+        href: str = str(raw_href)
+
+        if _is_skippable_href(href):
+            continue
+
+        full_url = _normalize(url, href)
+
+        if not _same_host(url, full_url):
+            skipped_offhost += 1
+            continue
+
+        if full_url in seen:
+            continue
+
+        if len(seen) >= MAX_NODES:
+            log.append(f"{indent}  ⚠ MAX_NODES ({MAX_NODES}) reached — truncating")
+            nodes.extend(dir_nodes)
+            nodes.extend(file_nodes)
+            return True
+
+        name = href.rstrip("/").split("/")[-1] or href
+        is_dir = href.endswith("/")
+
+        if is_dir:
+            child_nodes: list[FileNode] = []
+            truncated = await _crawl_url(
+                client=client,
+                url=full_url,
+                nodes=child_nodes,
+                seen=seen,
+                depth=depth + 1,
+                log=log,
+            )
+            dir_nodes.append(FileNode(name=name, url=full_url, is_dir=True, children=child_nodes))
+            if truncated:
+                nodes.extend(dir_nodes)
+                nodes.extend(file_nodes)
+                return True
+        elif _is_asset(full_url):
+            seen.add(full_url)
+            file_nodes.append(FileNode(name=name, url=full_url, is_dir=False))
+
+    if skipped_offhost:
+        log.append(f"{indent}  ↷ {skipped_offhost} off-host link(s) skipped")
+    log.append(f"{indent}  ✔ {len(dir_nodes)} dir(s), {len(file_nodes)} file(s) found")
+    nodes.extend(dir_nodes)
+    nodes.extend(file_nodes)
+    return False
 
 
 async def crawl(root_url: str) -> tuple[list[FileNode], bool, list[str]]:
@@ -139,47 +273,19 @@ async def _crawl_url(
         json_entries = _try_parse_nginx_json(response.text)
         if json_entries is not None:
             log.append(f"{indent}  JSON listing — {len(json_entries)} entries")
-            dir_nodes: list[FileNode] = []
-            file_nodes: list[FileNode] = []
-            for entry in json_entries:
-                name: str = entry.get("name", "")
-                if not name:
-                    continue
-                full_url = _normalize(url, name)
-                if full_url in seen:
-                    continue
-                if len(seen) >= MAX_NODES:
-                    log.append(f"{indent}  ⚠ MAX_NODES ({MAX_NODES}) reached — truncating")
-                    nodes.extend(dir_nodes)
-                    nodes.extend(file_nodes)
-                    return True
-                entry_type: str = entry.get("type", "file")
-                if entry_type == "directory":
-                    child_nodes: list[FileNode] = []
-                    truncated = await _crawl_url(
-                        client=client,
-                        url=full_url.rstrip("/") + "/",
-                        nodes=child_nodes,
-                        seen=seen,
-                        depth=depth + 1,
-                        log=log,
-                    )
-                    dir_nodes.append(FileNode(name=name.rstrip("/"), url=full_url, is_dir=True, children=child_nodes))
-                    if truncated:
-                        nodes.extend(dir_nodes)
-                        nodes.extend(file_nodes)
-                        return True
-                elif _is_asset(full_url):
-                    seen.add(full_url)
-                    file_nodes.append(FileNode(name=name, url=full_url, is_dir=False))
-            log.append(f"{indent}  ✔ {len(dir_nodes)} dir(s), {len(file_nodes)} file(s) found")
-            nodes.extend(dir_nodes)
-            nodes.extend(file_nodes)
-            return False
+            return await _process_nginx_json_entries(
+                client=client,
+                url=url,
+                json_entries=json_entries,
+                nodes=nodes,
+                seen=seen,
+                depth=depth,
+                log=log,
+            )
 
         # Not JSON listing — treat as a direct file asset
         name = url.rstrip("/").split("/")[-1] or url
-        log.append(f"{indent}  📄 {name} [{content_type}]")
+        log.append(f"{indent}  \U0001f4c4 {name} [{content_type}]")
         nodes.append(FileNode(name=name, url=url, is_dir=False))
         return False
 
@@ -189,60 +295,12 @@ async def _crawl_url(
     is_listing = _is_directory_listing(html)
     log.append(f"{indent}  HTML page — is_listing={is_listing}")
 
-    dir_nodes = []
-    file_nodes = []
-    skipped_offhost = 0
-
-    for anchor in soup.find_all("a", href=True):
-        if not isinstance(anchor, Tag):
-            continue
-        raw_href = anchor.get("href", "")
-        href: str = str(raw_href)
-
-        # Skip parent directory links, anchors, and query-only links
-        if href in ("/", "../", "./") or href.startswith("#") or href.startswith("?") or href.startswith("mailto:"):
-            continue
-
-        full_url = _normalize(url, href)
-
-        if not _same_host(url, full_url):
-            skipped_offhost += 1
-            continue
-
-        if full_url in seen:
-            continue
-
-        if len(seen) >= MAX_NODES:
-            log.append(f"{indent}  ⚠ MAX_NODES ({MAX_NODES}) reached — truncating")
-            nodes.extend(dir_nodes)
-            nodes.extend(file_nodes)
-            return True
-
-        name = href.rstrip("/").split("/")[-1] or href
-        is_dir = href.endswith("/")
-
-        if is_dir:
-            child_nodes = []
-            truncated = await _crawl_url(
-                client=client,
-                url=full_url,
-                nodes=child_nodes,
-                seen=seen,
-                depth=depth + 1,
-                log=log,
-            )
-            dir_nodes.append(FileNode(name=name, url=full_url, is_dir=True, children=child_nodes))
-            if truncated:
-                nodes.extend(dir_nodes)
-                nodes.extend(file_nodes)
-                return True
-        elif _is_asset(full_url):
-            seen.add(full_url)
-            file_nodes.append(FileNode(name=name, url=full_url, is_dir=False))
-
-    if skipped_offhost:
-        log.append(f"{indent}  ↷ {skipped_offhost} off-host link(s) skipped")
-    log.append(f"{indent}  ✔ {len(dir_nodes)} dir(s), {len(file_nodes)} file(s) found")
-    nodes.extend(dir_nodes)
-    nodes.extend(file_nodes)
-    return False
+    return await _process_html_anchors(
+        client=client,
+        url=url,
+        soup=soup,
+        nodes=nodes,
+        seen=seen,
+        depth=depth,
+        log=log,
+    )
