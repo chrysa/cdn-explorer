@@ -6,9 +6,49 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from api.crawler import _is_asset, _is_directory_listing, _normalize, _same_host, _try_parse_nginx_json, crawl
+from api.crawler import (
+    _is_asset,
+    _is_directory_listing,
+    _is_skippable_href,
+    _normalize,
+    _same_host,
+    _try_parse_nginx_json,
+    crawl,
+)
 
 # ── helpers ───────────────────────────────────────────────────────────────────
+
+
+def test_is_skippable_href_parent_dir() -> None:
+    assert _is_skippable_href("../") is True
+
+
+def test_is_skippable_href_self_dir() -> None:
+    assert _is_skippable_href("./") is True
+
+
+def test_is_skippable_href_root() -> None:
+    assert _is_skippable_href("/") is True
+
+
+def test_is_skippable_href_anchor() -> None:
+    assert _is_skippable_href("#section") is True
+
+
+def test_is_skippable_href_query() -> None:
+    assert _is_skippable_href("?sort=name") is True
+
+
+def test_is_skippable_href_mailto() -> None:
+    assert _is_skippable_href("mailto:admin@example.com") is True
+
+
+def test_is_skippable_href_normal_file() -> None:
+    assert _is_skippable_href("file.pdf") is False
+
+
+def test_is_skippable_href_subdir() -> None:
+    assert _is_skippable_href("subdir/") is False
 
 
 def test_is_asset_pdf() -> None:
