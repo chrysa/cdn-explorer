@@ -6,6 +6,17 @@ COMPOSE_DEV    := docker compose -f docker-compose.yml -f docker-compose.dev.yml
 API_IMAGE      := cdn-explorer-api
 APP_IMAGE      := cdn-explorer-app
 
+# ── Artifact isolation: keep tool caches out of the repo tree ─────────────────
+PROJECT_NAME   ?= cdn-explorer
+UID ?= $(shell id -u)
+GID ?= $(shell id -g)
+_CACHE_BASE ?= $(if $(XDG_CACHE_HOME),$(XDG_CACHE_HOME),$(HOME)/.cache)/chrysa/$(PROJECT_NAME)
+RUFF_CACHE_DIR ?= $(_CACHE_BASE)/ruff
+MYPY_CACHE_DIR ?= $(_CACHE_BASE)/mypy
+PYTHONPYCACHEPREFIX ?= $(_CACHE_BASE)/pycache
+PYTEST_ADDOPTS ?= -p no:cacheprovider
+export UID GID RUFF_CACHE_DIR MYPY_CACHE_DIR PYTHONPYCACHEPREFIX PYTEST_ADDOPTS
+
 .PHONY: help up up-dev down build test lint format typecheck pre-commit \
         docker-test docker-test-app logs clean
 
