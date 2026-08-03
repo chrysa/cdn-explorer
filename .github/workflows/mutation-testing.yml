@@ -61,6 +61,3 @@ jobs:
         name: mutmut-results
         path: .mutmut-cache
         retention-days: 7
-name: Mutation Testing
-permissions:
-  contents: read
