@@ -51,9 +51,12 @@ repos:
   hooks:
   - id: makefile-check
   - id: debugger-detection
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: python-print-detection
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: no-bare-except
   - id: fastapi-missing-response-model
+    exclude: (^|/)tests/
   - id: yaml-sorter
     exclude: ^(\.github/(workflows|ISSUE_TEMPLATE)/|GitVersion\.yml)
   - id: regression-gate
@@ -71,20 +74,21 @@ repos:
   - id: env-file-check
   - id: env-example-sync
   - id: python-pprint-detection
-    exclude: tests?/
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: python-logger-detection
+    exclude: (^|/)tests?/|^(README\.md|docs/)
   - id: python-unreachable-code
   - id: no-hardcoded-localhost
     exclude: tests?/|\.test\.|\.spec\.
   - id: fastapi-missing-links
-    exclude: ^tests/
+    exclude: (^|/)tests/
   - id: claude-skill-frontmatter
   - id: claude-agent-frontmatter
   - id: claude-mcp-config
   - id: python-no-unittest-import
   - id: claude-assets-present
   - id: python-untyped-raise
-    exclude: ^tests?/
+    exclude: (^|/)tests?/
   - id: python-mutable-default
   - id: python-dispatch-ladder
 - repo: https://github.com/compilerla/conventional-pre-commit
