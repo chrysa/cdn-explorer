@@ -15,6 +15,7 @@ from api.config import settings
 from api.constants import DEFAULT_TIMEOUT_SECONDS, MAX_DOWNLOAD_BYTES, USER_AGENT
 from api.crawler import crawl
 from api.schemas import ExploreRequest, ExploreResponse, FileNode
+from api.ssrf import SSRFError, validate_public_url
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["explore"])
@@ -66,10 +67,16 @@ async def download(
         )
 
     try:
-        client = httpx.AsyncClient(headers=_HEADERS, timeout=DEFAULT_TIMEOUT_SECONDS, follow_redirects=True)
+        validate_public_url(url)
+    except SSRFError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    client = httpx.AsyncClient(headers=_HEADERS, timeout=DEFAULT_TIMEOUT_SECONDS, follow_redirects=True)
+    try:
         response = await client.get(url)
         response.raise_for_status()
     except httpx.HTTPError as exc:
+        await client.aclose()
         raise HTTPException(status_code=502, detail=f"Upstream error: {exc}") from exc
 
     content_length = response.headers.get("content-length")
@@ -82,13 +89,19 @@ async def download(
 
     async def _stream() -> AsyncGenerator[bytes]:
         total = 0
-        async for chunk in response.aiter_bytes(chunk_size=8192):
-            total += len(chunk)
-            if total > MAX_DOWNLOAD_BYTES:
-                await client.aclose()
-                return
-            yield chunk
-        await client.aclose()
+        try:
+            async for chunk in response.aiter_bytes(chunk_size=8192):
+                total += len(chunk)
+                if total > MAX_DOWNLOAD_BYTES:
+                    # The 200 response has already begun, so no 413 can be sent
+                    # now. Raise instead of returning silently so the client
+                    # sees an aborted transfer rather than a truncated file that
+                    # looks complete.
+                    logger.warning("Download exceeded %d bytes, aborting stream: %s", MAX_DOWNLOAD_BYTES, url)
+                    raise RuntimeError("File exceeds maximum allowed size (50 MB)")
+                yield chunk
+        finally:
+            await client.aclose()
 
     return StreamingResponse(
         _stream(),
