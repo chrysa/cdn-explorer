@@ -83,6 +83,17 @@ async def test_download_invalid_scheme(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
+async def test_download_blocks_private_target(client: AsyncClient) -> None:
+    def _resolve_loopback(*_args: object, **_kwargs: object) -> list[object]:
+        return [(2, 1, 6, "", ("127.0.0.1", 0))]
+
+    with patch("api.ssrf.socket.getaddrinfo", _resolve_loopback):
+        response = await client.get("/api/download", params={"url": "http://internal.example.com/secret"})
+
+    assert response.status_code == 400
+
+
+@pytest.mark.asyncio
 async def test_download_success(client: AsyncClient) -> None:
     mock_response = MagicMock()
     mock_response.headers = {"content-type": "application/pdf", "content-length": "100"}
