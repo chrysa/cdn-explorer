@@ -20,6 +20,7 @@ from api.constants import (
 )
 from api.fixtures import demo_crawl_result
 from api.schemas import FileNode
+from api.ssrf import SSRFError, validate_public_url
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,7 @@ def _is_asset(href: str) -> bool:
 def _same_host(base_url: str, href: str) -> bool:
     base = urlparse(base_url)
     target = urlparse(href)
-    return target.netloc == "" or target.netloc == base.netloc
+    return target.netloc in ("", base.netloc)
 
 
 def _normalize(base_url: str, href: str) -> str:
@@ -130,6 +131,28 @@ async def _process_nginx_json_entries(
     return False
 
 
+def _href_targets(url: str, soup: BeautifulSoup) -> tuple[list[tuple[str, str]], int]:
+    """Return (targets, off-host count) for the crawlable anchors on the page.
+
+    Each target is a ``(href, full_url)`` pair; skippable and off-host links are
+    filtered out here so the caller stays flat.
+    """
+    targets: list[tuple[str, str]] = []
+    skipped_offhost = 0
+    for anchor in soup.find_all("a", href=True):
+        if not isinstance(anchor, Tag):
+            continue
+        href = str(anchor.get("href", ""))
+        if _is_skippable_href(href):
+            continue
+        full_url = _normalize(url, href)
+        if not _same_host(url, full_url):
+            skipped_offhost += 1
+            continue
+        targets.append((href, full_url))
+    return targets, skipped_offhost
+
+
 async def _process_html_anchors(
     *,
     client: httpx.AsyncClient,
@@ -144,23 +167,9 @@ async def _process_html_anchors(
     indent = "  " * depth
     dir_nodes: list[FileNode] = []
     file_nodes: list[FileNode] = []
-    skipped_offhost = 0
+    targets, skipped_offhost = _href_targets(url, soup)
 
-    for anchor in soup.find_all("a", href=True):
-        if not isinstance(anchor, Tag):
-            continue
-        raw_href = anchor.get("href", "")
-        href: str = str(raw_href)
-
-        if _is_skippable_href(href):
-            continue
-
-        full_url = _normalize(url, href)
-
-        if not _same_host(url, full_url):
-            skipped_offhost += 1
-            continue
-
+    for href, full_url in targets:
         if full_url in seen:
             continue
 
@@ -171,9 +180,8 @@ async def _process_html_anchors(
             return True
 
         name = href.rstrip("/").split("/")[-1] or href
-        is_dir = href.endswith("/")
 
-        if is_dir:
+        if href.endswith("/"):
             child_nodes: list[FileNode] = []
             truncated = await _crawl_url(
                 client=client,
@@ -235,6 +243,32 @@ async def crawl(root_url: str) -> tuple[list[FileNode], bool, list[str]]:
     return nodes, truncated, log
 
 
+async def _fetch(
+    *,
+    client: httpx.AsyncClient,
+    url: str,
+    indent: str,
+    log: list[str],
+) -> httpx.Response | None:
+    """Validate *url* against the SSRF guard and fetch it. Returns None on failure."""
+    try:
+        validate_public_url(url)
+    except SSRFError as exc:
+        log.append(f"{indent}  ✗ blocked (SSRF): {exc}")
+        logger.warning("Blocked non-public URL during crawl: %s (%s)", url, exc)
+        return None
+
+    try:
+        response = await client.get(url)
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        log.append(f"{indent}  ✗ {type(exc).__name__}: {exc}")
+        logger.warning("HTTP error fetching %s: %s", url, exc)
+        return None
+
+    return response
+
+
 async def _crawl_url(
     *,
     client: httpx.AsyncClient,
@@ -256,12 +290,8 @@ async def _crawl_url(
     indent = "  " * depth
     log.append(f"{indent}→ {url}")
 
-    try:
-        response = await client.get(url)
-        response.raise_for_status()
-    except httpx.HTTPError as exc:
-        log.append(f"{indent}  ✗ {type(exc).__name__}: {exc}")
-        logger.warning("HTTP error fetching %s: %s", url, exc)
+    response = await _fetch(client=client, url=url, indent=indent, log=log)
+    if response is None:
         return False
 
     content_type = response.headers.get("content-type", "")
