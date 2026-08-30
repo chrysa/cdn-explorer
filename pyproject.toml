@@ -41,7 +41,7 @@ target-version = "py313"
 line-length = 120
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "S", "B", "C4", "PT", "RUF", "C901", "PERF203", "PERF401", "PLR0402", "PLR0911", "PLR0912", "PLR0915", "PLR1714", "PLR1730", "PLR5501"]
+select = ["E", "F", "I", "N", "W", "UP", "S", "B", "C4", "PT", "RUF", "C901", "PERF203", "PERF401", "PLR0402", "PLR0911", "PLR0912", "PLR0915", "PLR1714", "PLR1730", "PLR5501", "PLR2004"]
 ignore = ["S101"]
 
 [tool.mypy]
@@ -62,3 +62,8 @@ addopts = "--cov=api --cov-report=term-missing --cov-report=xml --cov-fail-under
 [tool.coverage.run]
 source = ["api"]
 omit = ["tests/*"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["PLR2004"]
+"**/test_*.py" = ["PLR2004"]
+"**/conftest.py" = ["PLR2004"]
