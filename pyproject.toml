@@ -39,6 +39,9 @@ include = ["api*"]
 # py313 (not py314): ruff format <=0.15.15 strips multi-except parens under py314 — restore when fixed upstream
 target-version = "py313"
 line-length = 120
+# Managed copies distributed fleet-wide (mirrors the pre-commit top-level exclude):
+# not authored in this repo, so not gated on their lint state.
+extend-exclude = [".claude", "scripts/quality_gate.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "S", "B", "C4", "PT", "RUF", "C901", "PERF203", "PERF401", "PLR0402", "PLR0911", "PLR0912", "PLR0915", "PLR1714", "PLR1730", "PLR5501", "PLR2004"]
