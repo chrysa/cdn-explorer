@@ -94,6 +94,12 @@ repos:
   - id: ts-unreachable-code
   - id: react-no-async-in-useeffect
   - id: react-direct-dom
+  - id: django-hardcoded-secret
+  - id: ts-hardcoded-secret-detection
+  - id: pii-hardcoded
+    exclude: (^|/)tests?/
+  - id: dockerfile-multi-stage-check
+  - id: dockerfile-non-root-user
 - repo: https://github.com/compilerla/conventional-pre-commit
   rev: v4.4.0
   hooks:
@@ -127,3 +133,23 @@ repos:
   rev: v1.30.16
   hooks:
   - id: guideline-check
+- repo: https://github.com/PyCQA/bandit
+  rev: 1.8.0
+  hooks:
+  - id: bandit
+    args:
+    - -c
+    - pyproject.toml
+    additional_dependencies:
+    - bandit[toml]
+    exclude: (^|/)tests?/
+- repo: https://github.com/hadolint/hadolint
+  rev: v2.13.1-beta
+  hooks:
+  - id: hadolint-docker
+- repo: https://github.com/pypa/pip-audit
+  rev: v2.10.1
+  hooks:
+  - id: pip-audit
+    stages:
+    - pre-push

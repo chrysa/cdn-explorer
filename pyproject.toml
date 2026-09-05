@@ -70,3 +70,6 @@ omit = ["tests/*"]
 "**/tests/**" = ["PLR2004"]
 "**/test_*.py" = ["PLR2004"]
 "**/conftest.py" = ["PLR2004"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "build", "dist", "alembic", ".venv", ".claude"]
