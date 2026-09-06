@@ -17,8 +17,9 @@ PYTHONPYCACHEPREFIX ?= $(_CACHE_BASE)/pycache
 PYTEST_ADDOPTS ?= -p no:cacheprovider
 export UID GID RUFF_CACHE_DIR MYPY_CACHE_DIR PYTHONPYCACHEPREFIX PYTEST_ADDOPTS
 
-.PHONY: help up up-dev down build test lint format typecheck pre-commit \
-        docker-test docker-test-app logs clean
+.PHONY: help up up-dev down build test test-cov lint format typecheck pre-commit \
+        install dev build-test-image docker-test docker-test-app docker-up \
+        docker-down ci logs clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -42,8 +43,10 @@ build: ## Build all images
 	docker build --target production -t $(API_IMAGE):latest .
 	docker build --target production -t $(APP_IMAGE):latest ./app
 
-docker-test: ## Run backend tests inside Docker
+build-test-image: ## Build the in-container backend dev/test image (ruff, mypy, pytest)
 	docker build --target test -t $(API_IMAGE):test .
+
+docker-test: build-test-image ## Run backend tests inside Docker
 	docker run --rm $(API_IMAGE):test
 
 docker-test-app: ## Run frontend tests inside Docker
@@ -58,26 +61,27 @@ logs: ## Tail all container logs
 pre-commit: ## Run pre-commit on all files
 	pre-commit run --all-files
 
-lint: ## Lint backend (ruff)
-	ruff check api tests
+lint: build-test-image ## Lint backend (ruff, in-container)
+	docker run --rm $(API_IMAGE):test ruff check api tests
 
-format: ## Format backend (ruff)
-	ruff format api tests
+format: build-test-image ## Format backend (ruff, in-container)
+	docker run --rm -v "$(CURDIR):/work" -w /work $(API_IMAGE):test ruff format api tests
 
-typecheck: ## Type-check backend (mypy)
-	mypy api
+typecheck: build-test-image ## Type-check backend (mypy, in-container)
+	docker run --rm $(API_IMAGE):test mypy api
 
-test: ## Run backend tests (requires deps installed)
-	pytest
+test: build-test-image ## Run backend tests (in-container)
+	docker run --rm $(API_IMAGE):test pytest
 
-install: ## Install backend dev dependencies
-	pip install -e ".[dev]"
+install: build-test-image ## Build the in-container backend dev image (no host pip)
+	@echo "✓ In-container dev image ready ($(API_IMAGE):test). Run the loop with: make dev / make test / make lint"
 
-dev: install ## Install dev dependencies and pre-commit hooks
+dev: build-test-image ## Build the in-container dev image and install pre-commit hooks
 	pre-commit install
 
-test-cov: ## Run tests with coverage report
-	pytest --cov=api --cov-branch \
+test-cov: build-test-image ## Run tests with coverage report (in-container)
+	docker run --rm -v "$(CURDIR)/reports:/app/reports" $(API_IMAGE):test \
+		pytest --cov=api --cov-branch \
 		--cov-report=xml:reports/coverage.xml \
 		--cov-report=html:reports/coverage_html_report \
 		--cov-fail-under=85
