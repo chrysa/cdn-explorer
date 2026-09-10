@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "cdn-explorer \u2014 module map",
+    "quality_profile": "standard",
+    "viewBox": [
+      776,
+      720
+    ],
+    "views": [
+      {
+        "id": "modules",
+        "label": "Modules",
+        "focus": [
+          "d_claude",
+          "d_root",
+          "d_app",
+          "d_api",
+          "d_tests",
+          "d_standards"
+        ],
+        "note": "Top source directories sized by graph node count; edges are cross-module references."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "d_claude",
+      "type": "backend",
+      "label": ".claude",
+      "sublabel": "425 nodes",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_root",
+      "type": "backend",
+      "label": "(root)",
+      "sublabel": "133 nodes",
+      "pos": [
+        272,
+        60
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_app",
+      "type": "backend",
+      "label": "app",
+      "sublabel": "126 nodes",
+      "pos": [
+        504,
+        60
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_api",
+      "type": "frontend",
+      "label": "api",
+      "sublabel": "86 nodes",
+      "pos": [
+        40,
+        210
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_tests",
+      "type": "external",
+      "label": "tests",
+      "sublabel": "68 nodes",
+      "pos": [
+        272,
+        210
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_standards",
+      "type": "backend",
+      "label": "standards",
+      "sublabel": "63 nodes",
+      "pos": [
+        504,
+        210
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_github",
+      "type": "backend",
+      "label": ".github",
+      "sublabel": "46 nodes",
+      "pos": [
+        40,
+        360
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_scripts",
+      "type": "backend",
+      "label": "scripts",
+      "sublabel": "41 nodes",
+      "pos": [
+        272,
+        360
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_docs",
+      "type": "backend",
+      "label": "docs",
+      "sublabel": "14 nodes",
+      "pos": [
+        504,
+        360
+      ],
+      "size": [
+        156,
+        64
+      ]
+    },
+    {
+      "id": "d_vscode",
+      "type": "backend",
+      "label": ".vscode",
+      "sublabel": "3 nodes",
+      "pos": [
+        40,
+        510
+      ],
+      "size": [
+        156,
+        64
+      ]
+    }
+  ],
+  "connections": [],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Auto-generated",
+      "items": [
+        "Derived from graphify graph.json",
+        "1005 nodes \u00b7 1178 edges"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Top cross-module links",
+      "items": [
+        "tests \u2194 api (40)",
+        "api \u2194 (root) (7)",
+        "tests \u2194 scripts (5)",
+        "api \u2194 scripts (3)",
+        "scripts \u2194 (root) (1)"
+      ]
+    }
+  ]
+}
