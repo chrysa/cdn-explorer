@@ -107,7 +107,6 @@ Navigate and download files from public CDN directory listings
     action-check.yml
     approved-label.yml
     auto-assign.yml
-    auto-update-pre-commit.yml
     ci.yml
     dependabot-auto-merge.yml
     deploy.yml
@@ -200,6 +199,7 @@ docs/
 opencode.json
 pyproject.toml
 scripts/
+  gen_context_files.py
   quality_gate.py
 sonar-project.properties
 standards/
@@ -254,6 +254,7 @@ api/routers/__init__.py
 api/routers/explore.py — Explore router — CDN crawling and file download proxy.
 api/schemas.py — Pydantic schemas for the CDN explorer API.
 api/ssrf.py — SSRF guard — reject URLs that resolve to non-public IP ranges.
+scripts/gen_context_files.py — Generate the standardised per-repo context files from the repo's own content.
 scripts/quality_gate.py
 tests/__init__.py
 tests/conftest.py — Pytest configuration and shared fixtures.
