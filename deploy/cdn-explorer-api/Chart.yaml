@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+dependencies:
+    - name: app-template
+      repository: https://bjw-s-labs.github.io/helm-charts
+      version: 4.6.2
+description: cdn-explorer — FastAPI backend (CDN crawler + explore API)
+name: cdn-explorer-api
+type: application
+version: 1.0.0
