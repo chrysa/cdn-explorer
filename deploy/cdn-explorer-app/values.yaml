@@ -1,0 +1,66 @@
+app-template:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/chrysa/cdn-explorer-frontend
+            tag: v0.1.0
+          probes:
+            liveness:
+              custom: true
+              enabled: true
+              spec:
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 4173
+                initialDelaySeconds: 5
+                periodSeconds: 30
+            readiness:
+              custom: true
+              enabled: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 4173
+                initialDelaySeconds: 5
+                periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+  ingress:
+    main:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        gethomepage.dev/description: CDN explorer UI
+        gethomepage.dev/enabled: 'true'
+        gethomepage.dev/group: Dev
+        gethomepage.dev/icon: sh-chrysa
+        gethomepage.dev/name: CDN Explorer
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: infra-tinyauth-auth@kubernetescrd,infra-security-headers@kubernetescrd
+      className: traefik
+      hosts:
+      - host: cdn-explorer.ducal.me
+        paths:
+        - path: /
+          pathType: Prefix
+          service:
+            identifier: main
+            port: http
+      tls:
+      - hosts:
+        - cdn-explorer.ducal.me
+        secretName: cdn-explorer-app-tls
+  service:
+    main:
+      controller: main
+      ports:
+        http:
+          port: 4173
