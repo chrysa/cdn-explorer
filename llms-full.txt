@@ -112,6 +112,7 @@ Navigate and download files from public CDN directory listings
     deploy.yml
     detect-conflicts.yml
     enforce-feature-branch.yml
+    enforce-shortcut-link.yml
     labeler.yml
     mutation-testing.yml
     pages.yml
