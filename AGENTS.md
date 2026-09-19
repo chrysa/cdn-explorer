@@ -208,4 +208,7 @@ This project is indexed by GitNexus as **cdn-explorer** (277 symbols, 374 relati
 - Release & changelog config (canonical)
 - GitHub Actions (reuse first · custom actions centralised · thin workflows)
 - Pre-commit & git hooks (native, via pre-commit.com — never wrapped in make)
+
+### Local AI orchestration & local-first · `standards/rules/ai-orchestration.md`
+- AI orchestration & local-first
 <!-- chrysa:standards-agents:end -->
