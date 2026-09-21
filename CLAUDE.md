@@ -9,7 +9,7 @@ Input: a public URL. Output: navigable file tree + download proxy.
 
 ## Stack
 
-- **Backend**: FastAPI (Python 3.12) — `api/` package
+- **Backend**: FastAPI (Python 3.14) — `api/` package
 - **Frontend**: React 19 + Vite + TypeScript — `app/` directory
 - **Container**: Docker multi-stage + Docker Compose
 
