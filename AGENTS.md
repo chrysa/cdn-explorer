@@ -161,6 +161,14 @@ This project is indexed by GitNexus as **cdn-explorer** (277 symbols, 374 relati
 - Quality gates
 - Error handling pattern (all automations)
 
+### Product surfaces · `standards/rules/product.md`
+- A public web surface is legally compliant, consent-respecting, and operable — before it ships
+- Setup wizard & config panel
+- A game is DRM-free and fully playable solo offline
+- Every product that is operated ships a management backoffice
+- If a user can supply a file, the product accepts an upload
+- A floating assistant where it earns its place — never as decoration
+
 ### Backend Python · `standards/rules/backend-python.md`
 - Python packaging — `pyproject.toml` is the single source of truth
 - Python is written object-oriented, one class per file
@@ -189,13 +197,6 @@ This project is indexed by GitNexus as **cdn-explorer** (277 symbols, 374 relati
 - Default to dev mode when starting an app locally — any other mode only when explicitly asked
 - `.dockerignore` mandatory & exhaustive
 - Container-runtime policy
-
-### Product surfaces · `standards/rules/product.md`
-- Setup wizard & config panel
-- A game is DRM-free and fully playable solo offline
-- Every product that is operated ships a management backoffice
-- If a user can supply a file, the product accepts an upload
-- A floating assistant where it earns its place — never as decoration
 
 ### Design system · `standards/rules/design.md`
 - Design system
