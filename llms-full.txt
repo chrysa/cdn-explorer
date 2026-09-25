@@ -34,7 +34,9 @@ Navigate and download files from public CDN directory listings
   hooks/
     check-no-env-files.cjs
     circuit-breaker.cjs
+    claude-config-drift.cjs
     frustration-detection.cjs
+    graphify-auto-update.cjs
     memory-consolidation.cjs
     model-debt-inventory.cjs
     secret-scanner.cjs
@@ -63,6 +65,8 @@ Navigate and download files from public CDN directory listings
     dockerfile-multistage/
       SKILL.md
     error-handling/
+      SKILL.md
+    frontend-e2e-smoke/
       SKILL.md
     gitnexus/
       gitnexus-cli/
@@ -130,6 +134,7 @@ Navigate and download files from public CDN directory listings
 .pre-commit-config.yaml
 .secrets.baseline
 AGENTS.md
+ARCHITECTURE.md
 CHANGELOG.md
 CLAUDE.md
 CODEOWNERS
@@ -208,6 +213,7 @@ standards/
     README.md
     accessibility.md
     agents.md
+    ai-orchestration.md
     api.md
     architecture.md
     backend-python.md
