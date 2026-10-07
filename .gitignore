@@ -89,3 +89,9 @@ Thumbs.db
 .claude/state/
 .claude/worktrees/
 .claude/hooks/*-state.json
+
+# prism-ai-lint: keep secrets and local config out of git
+*.pem
+*.key
+secrets/
+CLAUDE.local.md
