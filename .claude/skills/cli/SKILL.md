@@ -1,65 +1,26 @@
-# cdn-explorer — GitHub Copilot Instructions
+---
+name: cli
+description: "Procedure: CLI. Use when this procedure is needed."
+---
 
-## Mandatory Workflow
+| Task | Read this skill file |
+|------|---------------------|
+| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
+| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
+| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
+| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
+| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
-1. Read `.github/instructions/*.instructions.md` when present.
-2. Read `CLAUDE.md` for repository context.
-3. Follow repository-local conventions before writing code.
+<!-- gitnexus:end -->
 
-## Project Context
 
-**Stack:** Python
-**Purpose:** CDN content exploration and analysis tool for the chrysa ecosystem.
+<!-- chrysa:standards:start · managed by distribute-standards.sh · DO NOT EDIT -->
+# chrysa — Transverse Standards (core)
 
-## Engineering Rules
+> The **slim always-on core**. The canonical, tool-agnostic source of truth is `standards/STANDARDS.chrysa.md`; the normative annexes live under `standards/annexes/`. Each rule below is a one-line pointer — its full text lives in the per-domain file named beside the heading (`standards/rules/<domain>.md`), read on demand.
 
-- Write in English: code, comments, docs, issues, PRs and commits.
-- Keep changes minimal and aligned with the existing style.
-- Do not add unrelated refactors or speculative improvements.
-- Prefer make targets when available instead of invoking tooling ad hoc.
-- Never commit secrets, credentials or environment-specific values.
-
-## Automation & Industrialization (NON-NEGOTIABLE)
-
-- Projects must be **maximally automated and industrialized**.
-- Every repetitive task must be covered by one of: CI/CD pipeline, Makefile target, pre-commit hook, GitHub Actions workflow, or a bot/script.
-- Required automation baseline for any project:
-  - **CI/CD**: automated lint, type-check, tests, build on every push/PR.
-  - **Formatting**: auto-applied via pre-commit or CI (no manual `ruff`/`prettier` runs).
-  - **Releases**: automated versioning and changelog generation (e.g. `cliff`, `semantic-release`).
-  - **Dependency updates**: automated via Dependabot or Renovate.
-  - **Secret scanning**: automated on every commit (pre-commit hook + CI step).
-- When proposing or implementing a feature, always include the automation layer (tests, CI step, Makefile target) — not just the code.
-- Any manual step that could be automated is considered **technical debt** and must be tracked.
-
-## Canonical Templates & Shared Tooling
-
-### Makefiles
-- All project Makefiles **must** extend or be derived from `Forge-Stack-Workshop/base-makefile`.
-- Do not duplicate targets that already exist in the base — inherit instead.
-
-### Pre-commit hooks
-- If a required hook is missing from `chrysa/pre-commit-tools`, **open an issue** on that repo describing the hook needed before proceeding.
-- In the requesting repo, open a matching issue/PR and mark it as dependent (`Depends on chrysa/pre-commit-tools#<N>`).
-- Do not implement a workaround locally — wait for the hook to land in the shared repo.
-
-## Claude Interoperability
-
-- This repository is also prepared for Claude Code via `.claude/` and `CLAUDE.md`.
-- Claude skills are available under `.claude/skills/` for relevant tasks.
-- If a task has repository instructions, those instructions override generic defaults.
-
-## Quality Thresholds
-
-- Max function length: 50 lines when practical.
-- Max file length: 500 lines when practical.
-- Max cyclomatic complexity: 10.
-- Lint warnings target: 0.
-
-<!-- chrysa:standards-copilot:start · generated · DO NOT EDIT -->
-## chrysa standards (generated)
-
-> The same rules as `CLAUDE.md`, for GitHub Copilot. Detail loads on demand from `standards/rules/<domain>.md`; the canon is `standards/STANDARDS.chrysa.md`.
+**Where an annexe and the canon disagree, the canon wins.**
 
 ### Governance, language & compliance · `standards/rules/governance.md`
 - Normative annexes
@@ -198,4 +159,4 @@
 
 ### Local AI orchestration & local-first · `standards/rules/ai-orchestration.md`
 - AI orchestration & local-first
-<!-- chrysa:standards-copilot:end -->
+<!-- chrysa:standards:end -->
