@@ -80,3 +80,9 @@ This project is indexed by GitNexus as **cdn-explorer** (277 symbols, 374 relati
 ## CLI
 
 Follow the /cli skill.
+
+## Product design contract
+
+Before UI, component, style, navigation or asset work, read [DESIGN.md](DESIGN.md)
+and any product-specific specification it links. Keep the contract and acceptance
+evidence aligned with UI changes. Load it on demand; do not duplicate its tokens here.
