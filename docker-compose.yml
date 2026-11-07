@@ -7,14 +7,6 @@ services:
     environment:
       ALLOWED_ORIGINS: '["http://localhost:5173","http://localhost:8011"]'
       DEBUG: 'false'
-    healthcheck:
-      interval: 10s
-      retries: 3
-      start_period: 15s
-      test:
-      - CMD-SHELL
-      - curl -f http://127.0.0.1:8000/health || exit 1
-      timeout: 5s
     network_mode: host
   frontend:
     build:
